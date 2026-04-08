@@ -61,10 +61,10 @@ body{font-family:var(--fb);color:var(--ink);padding-bottom:88px;font-size:14px}
 .ab-t{font-size:12px;font-weight:500;line-height:1.5}.ab-gioty .ab-t{color:var(--amber)}.ab-mid .ab-t{color:var(--pur)}.ab-sig .ab-t{color:var(--red)}
 
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:100;background:var(--bg2);border-top:1.5px solid var(--b);box-shadow:0 -4px 16px rgba(0,0,0,.06)}
-.nav-inner{display:grid;grid-template-columns:repeat(6,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.nav-inner{display:grid;grid-template-columns:repeat(7,1fr);padding-bottom:env(safe-area-inset-bottom)}
 .ni{padding:8px 0 6px;text-align:center;cursor:pointer;color:var(--ink4);transition:color .2s;position:relative;flex:1}
 .ni.active{color:var(--g2)}.ni.active::before{content:'';position:absolute;top:0;left:15%;right:15%;height:2px;background:var(--g3);border-radius:0 0 2px 2px}
-.ni-ic{font-size:15px;display:block;margin-bottom:2px}.ni-lb{font-size:9px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:inherit;display:block}
+.ni-ic{font-size:15px;display:block;margin-bottom:2px}.ni-lb{font-size:8.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:inherit;display:block}
 
 .panel{display:none;padding:10px 14px 0;animation:fadeUp .2s ease}.panel.active{display:block}
 
@@ -364,6 +364,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;b
       </div>
       <div id="st-list"></div>
       <div class="st-add">
+        <input class="fi" id="st-time" type="time" style="width:80px;font-size:12px;border-radius:var(--r);padding:6px 8px" title="Giờ nhắc">
         <input class="st-in" id="st-in" placeholder="Thêm task phụ..." onkeydown="if(event.key==='Enter')addST()">
         <button class="btn-ic" onclick="addST()" style="flex-shrink:0">+ Thêm</button>
       </div>
@@ -399,12 +400,61 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;b
   <div class="card"><div class="cl">Bảng Level</div><div id="lvltbl"></div></div>
 </div>
 
+<!-- ══ GYM ══ -->
+<div class="panel" id="p2">
+  <div style="margin:10px 0 12px">
+    <div style="font-size:18px;font-weight:800">&#127947; Gym &amp; B&#417;i</div>
+    <div style="font-size:11px;color:var(--ink4);margin-top:2px">L&#7883;ch t&#7853;p + Ghi bu&#7893;i t&#7853;p</div>
+  </div>
+
+    <div class="card" style="margin-top:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="cl" style="margin:0">&#127947; Gym &amp; B&#417;i</div>
+        <div id="gym-week-label" style="font-size:11px;color:var(--ink4);font-weight:600"></div>
+      </div>
+
+      <!-- Date + muscle group selector -->
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input class="fi" type="date" id="gym-date" style="flex:1;font-size:12px">
+        <select class="fi" id="gym-muscle" style="width:110px;font-size:12px" onchange="renderGymInline()">
+          <option value="Ngực">&#128170; Ngực</option>
+          <option value="Lưng">&#128692; Lưng</option>
+          <option value="Vai">&#129354; Vai</option>
+          <option value="Tay">&#128080; Tay</option>
+          <option value="Chân">&#129461; Chân</option>
+          <option value="Bụng">&#127947; Bụng</option>
+          <option value="Bơi">&#127946; Bơi</option>
+          <option value="Full">&#128293; Full body</option>
+        </select>
+      </div>
+
+      <!-- Inline exercise rows from schedule + input fields -->
+      <div id="gym-inline-rows"></div>
+
+      <!-- Extra custom rows -->
+      <div id="gym-rows"></div>
+      <button class="btn btn-outline" onclick="addGymRow()" style="font-size:12px;width:100%;margin-bottom:8px;margin-top:4px">+ Thêm bài</button>
+
+      <textarea class="fi" id="gym-note" placeholder="Ghi chú buổi tập..." style="min-height:48px;resize:vertical;font-size:12px;margin-bottom:8px"></textarea>
+      <button class="btn btn-primary" onclick="saveGymLog()" style="width:100%;font-size:13px">&#128190; Lưu buổi tập</button>
+      <div id="gym-msg" style="font-size:11px;text-align:center;margin-top:6px;min-height:14px;color:var(--ink4)"></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="cl" style="margin:0">&#128202; Lịch sử</div>
+        <span id="gym-cnt" style="font-size:11px;color:var(--ink4)"></span>
+      </div>
+      <div id="gym-hist"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ HỌC ══ -->
 <div class="panel" id="p3">
   <div class="stabs" style="margin-top:10px">
     <div class="stab active" id="lt0" onclick="ltab(0)">Tuần này</div>
     <div class="stab" id="lt1" onclick="ltab(1)">📚 Sách</div>
-    <div class="stab" id="lt5" onclick="ltab(5)">&#128203; Concept</div>
     <div class="stab" id="lt2" onclick="ltab(2)">🎙 Podcast</div>
     <div class="stab" id="lt3" onclick="ltab(3)">▶ YouTube</div>
     <div class="stab" id="lt4" onclick="ltab(4)">Doctrine</div>
@@ -505,6 +555,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;b
       <div id="concept-list"></div>
     </div>
   </div>
+
 
 <!-- ══ SETUP ══ -->
 <!-- PLAN PANEL -->
@@ -616,11 +667,11 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;b
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
         <div class="cl" style="margin:0;color:var(--amber)">&#128276; Thông báo</div>
-        <div style="font-size:11px;color:var(--ink3);margin-top:3px">Nh&#7855;c gi&#7901; OBT + Gi&#7901; T&#7925;</div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:3px">Nh&#7855;c gi&#7901; War Schedule + OBT</div>
       </div>
-      <button class="btn btn-primary" onclick="requestNotifPermission()" style="font-size:12px;padding:8px 14px">B&#7853;t</button>
+      <button id="notif-btn" class="btn btn-primary" onclick="requestNotifPermission()" style="font-size:12px;padding:8px 14px">B&#7853;t</button>
     </div>
-    <div style="font-size:10px;color:var(--ink4);margin-top:8px">&#8226; C&#7847;n m&#7903; app trong background &#8226; iOS: Add to Home Screen tr&#432;&#7899;c</div>
+    <div style="font-size:10px;color:var(--ink4);margin-top:8px">&#8226; C&#7847;n m&#7903; app trong background &#8226; iOS: Safari &#8594; Add to Home Screen tr&#432;&#7899;c</div>
   </div>
   <div class="card" style="margin-top:10px">
     <div class="cl">⚙ Cài đặt</div>
@@ -758,7 +809,6 @@ function ltab(i){try{[0,1,2,3,4,5].forEach(function(j){var t=document.getElement
 function pltab(i){try{[0,1,2].forEach(function(j){var t=document.getElementById('plt'+j),p=document.getElementById('plp'+j);if(t)t.classList.toggle('active',j===i);if(p)p.style.display=j===i?'block':'none';});}catch(e){}}
 function rtab(i){try{[0,1].forEach(function(j){var t=document.getElementById('rt'+j),p=document.getElementById('rp'+j);if(t)t.classList.toggle('active',j===i);if(p)p.style.display=j===i?'block':'none';});}catch(e){}}
 function selQ(q){try{['q1','q2','q3','q4'].forEach(function(k){var e=document.getElementById('eq'+k.slice(1));if(e)e.classList.toggle('sel',k===q);});}catch(e){}}
-function wtab(i){try{[0,1].forEach(function(j){var t=document.getElementById('wt'+j),p=document.getElementById('wp'+j);if(t)t.classList.toggle('active',j===i);if(p)p.style.display=j===i?'block':'none';});}catch(e){}}
 function lichFilter(t){try{window._lf=t;['all','Master','Retail GD2','Retail GD3'].forEach(function(k){var b=document.getElementById('lf-'+k);if(!b)return;b.style.background=k===t?'var(--blu)':'';b.style.color=k===t?'#fff':'';b.style.fontWeight=k===t?'700':'400';});setTimeout(function(){if(typeof renderLichWeeks==='function')renderLichWeeks();},100);}catch(e){}}
 function toggleLichRow(el){try{var d=el.querySelector('.lich-dtl');if(d)d.style.display=d.style.display==='none'?'block':'none';}catch(e){}}
 function addGoalLong(){setTimeout(function(){if(typeof window._fn_addGoalLong==='function')window._fn_addGoalLong();},100);}
@@ -772,11 +822,14 @@ function saveGymLog(){setTimeout(function(){if(typeof window._fn_saveGymLog==='f
 function lichtab(i){try{[0,1,2,3].forEach(function(j){var t=document.getElementById('lt9-'+j),p=document.getElementById('lp9-'+j);if(t)t.classList.toggle('active',j===i);if(p)p.style.display=j===i?'block':'none';});setTimeout(function(){if(i===0&&typeof renderLich==='function')renderLich();if(i===1&&typeof renderLichEng==='function')renderLichEng();if(i===2&&typeof renderLichGuitar==='function')renderLichGuitar();if(i===3&&typeof renderLichBiz==='function')renderLichBiz();},100);}catch(e){}}
 
 function addConcept(){setTimeout(function(){if(typeof window._addConcept==='function')window._addConcept();else if(typeof concepts!=='undefined'){var inp=document.getElementById('concept-name');if(inp&&inp.value.trim())addConcept();}},100);}
+
+function requestNotifPermission(){setTimeout(function(){if(typeof window._reqNotif==='function')window._reqNotif();},100);}
 </script>
 
 <div class="nav"><div class="nav-inner">
   <div class="ni active" onclick="nav(this,0)"><span class="ni-ic">&#9711;</span><span class="ni-lb">Today</span></div>
   <div class="ni" onclick="nav(this,1)"><span class="ni-ic">&#9889;</span><span class="ni-lb">XP</span></div>
+  <div class="ni" onclick="nav(this,2)"><span class="ni-ic">&#127947;</span><span class="ni-lb">Gym</span></div>
   <div class="ni" onclick="nav(this,3)"><span class="ni-ic">&#128218;</span><span class="ni-lb">H&#7885;c</span></div>
   <div class="ni" onclick="nav(this,6)"><span class="ni-ic">&#128197;</span><span class="ni-lb">Plan</span></div>
   <div class="ni" onclick="nav(this,7)"><span class="ni-ic">&#9881;</span><span class="ni-lb">Setup</span></div>
@@ -878,6 +931,9 @@ function renderAll(){
   try{renderHabits();}catch(e){}
   try{renderWater();}catch(e){}
   try{renderLvlTbl();}catch(e){}
+  try{renderWarSched();}catch(e){}
+  try{renderRvQs();}catch(e){}
+  try{renderWkQs();}catch(e){}
   try{renderTangs();}catch(e){}
   try{renderBooks();}catch(e){}
   try{renderPodcasts();}catch(e){}
@@ -886,6 +942,7 @@ function renderAll(){
   try{loadTodayOBT();}catch(e){}
   try{renderSubtasks();}catch(e){}
   try{renderScoreGrid();}catch(e){}
+  try{renderDecList();}catch(e){}
   try{renderSwall();}catch(e){}
   try{renderPM();}catch(e){}
   try{renderLearnForm();}catch(e){}
@@ -900,8 +957,7 @@ function nav(el,i){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
   el.classList.add('active');
   var _p=document.getElementById('p'+i);if(_p)_p.classList.add('active');
-  // Reset war sub-tabs if navigating away
-  if(i!==2){try{var wt=document.getElementById('wt0');var wp=document.getElementById('wp0');if(wt&&!wt.classList.contains('active')){wtab(0);}}catch(e){}}
+  if(i===2)try{initGym();}catch(e){}
   if(i===6)try{renderWkPlan();}catch(e){}
   if(i===7){try{renderSettingsUI();}catch(e){}try{loadCloudCfg();}catch(e){}}
   if(i===8)try{renderGoals();}catch(e){}
@@ -1698,7 +1754,8 @@ function setZoom(scale){
   var _nav=nav;
   nav=function(el,i){
     _nav(el,i);
-    if(i===6)try{renderWkPlan();}catch(e){}
+    if(i===2)try{initGym();}catch(e){}
+  if(i===6)try{renderWkPlan();}catch(e){}
     if(i===7){try{renderSettingsUI();}catch(e){}try{loadCloudCfg();}catch(e){}}
   };
 })();
@@ -1847,12 +1904,30 @@ function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').rep
 function renderGoals(){renderGoalLong();renderGoal6m();renderGoalSprint();var v=document.getElementById('goal-vision');if(v)v.value=goals.vision||'';}
 function renderGoalLong(){
   var el=document.getElementById('goal-long-list');if(!el)return;
-  if(!goals.long.length){el.innerHTML='<div style="color:var(--ink4);font-size:12px;padding:4px 0">Chưa có mốc · Thêm bên dưới</div>';return;}
-  var html='';
-  goals.long.forEach(function(g,i){html+='<div style="display:flex;gap:10px;align-items:flex-start;padding:10px;border-radius:var(--r);background:var(--bg3);border:1px solid var(--b);margin-bottom:8px"><div style="flex:1"><div style="font-size:0.786rem;font-weight:700;color:var(--amber);margin-bottom:3px">'+escH(g.date||'')+'</div><div style="font-size:0.929rem;font-weight:600;'+(g.done?'text-decoration:line-through;opacity:.45':'')+'">'+escH(g.text||'')+'</div></div><div style="display:flex;gap:6px"><span onclick="toggleGoalLong('+i+')" style="cursor:pointer;font-size:16px">'+(g.done?'✅':'⬜')+'</span><span onclick="delGoalLong('+i+')" style="cursor:pointer;font-size:16px;opacity:.5">🗑</span></div></div>';});
+  if(!goals.long.length){
+    el.innerHTML='<div style="text-align:center;padding:14px 0;color:var(--ink4);font-size:12px">Chưa có mốc · Thêm bên dưới ↓</div>';return;
+  }
+  var now=new Date();
+  var html='<div style="position:relative;padding-left:20px;border-left:2px solid var(--b)">';
+  goals.long.forEach(function(g,i){
+    var past=g.done;
+    var col=past?'var(--grn)':'var(--amber)';
+    html+='<div style="position:relative;margin-bottom:16px;padding:10px 12px;border-radius:var(--r);background:'+(past?'var(--gbg)':'var(--bg3)')+';border:1px solid '+(past?'var(--gb)':'var(--b)')+'">';
+    html+='<div style="position:absolute;left:-26px;top:12px;width:10px;height:10px;border-radius:50%;background:'+col+';border:2px solid var(--bg)"></div>';
+    html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">';
+    html+='<div style="flex:1">';
+    html+='<div style="font-size:0.714rem;font-weight:800;color:'+col+';margin-bottom:4px;letter-spacing:.05em">'+escH(g.date||'?')+'</div>';
+    html+='<div style="font-size:0.929rem;font-weight:700;color:var(--ink);line-height:1.4;'+(past?'text-decoration:line-through;opacity:.5':'')+'">'+escH(g.text||'')+'</div>';
+    html+='</div>';
+    html+='<div style="display:flex;gap:6px;flex-shrink:0">';
+    html+='<span onclick="toggleGoalLong('+i+')" style="cursor:pointer;font-size:18px">'+(past?'✅':'⬜')+'</span>';
+    html+='<span onclick="delGoalLong('+i+')" style="cursor:pointer;font-size:16px;opacity:.4">🗑</span>';
+    html+='</div></div></div>';
+  });
+  html+='</div>';
   el.innerHTML=html;
 }
-window._fn_addGoalLong=function(){var d=document.getElementById('gl-date'),t=document.getElementById('gl-text');if(!t)return;var tx=(t.value||'').trim();if(!tx){t.focus();return;}goals.long.push({date:(d&&d.value||'').trim(),text:tx,done:false});goals.long.sort(function(a,b){return (a.date||'').localeCompare(b.date||'');});saveGoals();renderGoalLong();if(d)d.value='';t.value='';};
+
 function addGoalLong(){window._fn_addGoalLong&&window._fn_addGoalLong();}
 function toggleGoalLong(i){if(!goals.long[i])return;goals.long[i].done=!goals.long[i].done;saveGoals();renderGoalLong();}
 function delGoalLong(i){if(!confirm('Xóa?'))return;goals.long.splice(i,1);saveGoals();renderGoalLong();}
@@ -1860,23 +1935,48 @@ function renderGoal6m(){
   ['personal','career'].forEach(function(cat){
     var el=document.getElementById('goal-6m-'+cat);if(!el)return;
     var items=goals.m6[cat]||[];
-    if(!items.length){el.innerHTML='<div style="color:var(--ink4);font-size:12px;padding:4px 0">Chưa có</div>';return;}
+    if(!items.length){el.innerHTML='<div style="color:var(--ink4);font-size:12px;padding:6px 0">Chưa có · Thêm bên dưới</div>';return;}
     var html='';
-    items.forEach(function(g,i){html+='<div style="display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--b)"><div onclick="toggleGoal6m(\''+cat+'\','+i+')" style="width:18px;height:18px;border:1.5px solid;border-radius:4px;flex-shrink:0;cursor:pointer;background:'+(g.done?'var(--grn)':'var(--bg2)')+';border-color:'+(g.done?'var(--grn)':'var(--b2)')+'"></div><div style="flex:1;font-size:0.857rem;font-weight:600;'+(g.done?'text-decoration:line-through;opacity:.45':'')+'">'+escH(g.text||'')+'</div><span onclick="delGoal6m(\''+cat+'\','+i+')" style="cursor:pointer;color:var(--ink4);font-size:16px">&#215;</span></div>';});
+    var done=items.filter(function(g){return g.done;}).length;
+    items.forEach(function(g,i){
+      html+='<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)">';
+      html+='<div onclick="toggleGoal6m(\''+cat+'\','+i+')" style="width:22px;height:22px;border:2px solid;border-radius:6px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;background:'+(g.done?'var(--grn)':'transparent')+';border-color:'+(g.done?'var(--grn)':'var(--b2)')+';">';
+      if(g.done)html+='<span style="color:#fff;font-size:12px">✓</span>';
+      html+='</div>';
+      html+='<div style="flex:1;font-size:0.857rem;font-weight:600;'+(g.done?'text-decoration:line-through;opacity:.45':'')+'">'+escH(g.text||'')+'</div>';
+      html+='<span onclick="delGoal6m(\''+cat+'\','+i+')" style="cursor:pointer;color:var(--ink4);font-size:18px;line-height:1">×</span>';
+      html+='</div>';
+    });
     el.innerHTML=html;
   });
 }
+
 window._fn_addGoal6m=function(cat){var inp=document.getElementById('g6-'+cat+'-in');if(!inp)return;var tx=(inp.value||'').trim();if(!tx){inp.focus();return;}if(!goals.m6[cat])goals.m6[cat]=[];goals.m6[cat].push({text:tx,done:false});saveGoals();renderGoal6m();inp.value='';};
 function addGoal6m(cat){window._fn_addGoal6m&&window._fn_addGoal6m(cat);}
 function toggleGoal6m(cat,i){if(!goals.m6[cat]||!goals.m6[cat][i])return;goals.m6[cat][i].done=!goals.m6[cat][i].done;saveGoals();renderGoal6m();}
 function delGoal6m(cat,i){if(!goals.m6[cat])return;goals.m6[cat].splice(i,1);saveGoals();renderGoal6m();}
 function renderGoalSprint(){
   var el=document.getElementById('goal-sprint-list');if(!el)return;
-  if(!goals.sprint.length){el.innerHTML='<div style="color:var(--ink4);font-size:12px;padding:4px 0">Chưa có · Thêm bên dưới</div>';return;}
-  var html='';
-  goals.sprint.forEach(function(g,i){html+='<div style="display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--b)"><div onclick="toggleGoalSprint('+i+')" style="width:18px;height:18px;border:1.5px solid;border-radius:4px;flex-shrink:0;cursor:pointer;background:'+(g.done?'var(--grn)':'var(--bg2)')+';border-color:'+(g.done?'var(--grn)':'var(--b2)')+'"></div><div style="flex:1;font-size:0.857rem;font-weight:600;'+(g.done?'text-decoration:line-through;opacity:.45':'')+'">'+escH(g.text||'')+'</div><span onclick="delGoalSprint('+i+')" style="cursor:pointer;color:var(--ink4);font-size:16px">&#215;</span></div>';});
+  if(!goals.sprint.length){el.innerHTML='<div style="color:var(--ink4);font-size:12px;padding:6px 0">Chưa có · Thêm bên dưới</div>';return;}
+  var done=goals.sprint.filter(function(g){return g.done;}).length;
+  var total=goals.sprint.length;
+  var pct=total?Math.round(done/total*100):0;
+  var html='<div style="margin-bottom:10px">';
+  html+='<div style="display:flex;justify-content:space-between;font-size:0.714rem;color:var(--ink3);margin-bottom:4px"><span>'+done+'/'+total+' hoàn thành</span><span style="font-weight:700;color:var(--grn)">'+pct+'%</span></div>';
+  html+='<div style="height:6px;background:var(--b);border-radius:3px"><div style="height:100%;width:'+pct+'%;background:var(--grn);border-radius:3px;transition:width .3s"></div></div>';
+  html+='</div>';
+  goals.sprint.forEach(function(g,i){
+    html+='<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)">';
+    html+='<div onclick="toggleGoalSprint('+i+')" style="width:22px;height:22px;border:2px solid;border-radius:6px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;background:'+(g.done?'var(--grn)':'transparent')+';border-color:'+(g.done?'var(--grn)':'var(--b2)')+';">';
+    if(g.done)html+='<span style="color:#fff;font-size:12px">✓</span>';
+    html+='</div>';
+    html+='<div style="flex:1;font-size:0.857rem;font-weight:600;'+(g.done?'text-decoration:line-through;opacity:.45':'')+'">'+escH(g.text||'')+'</div>';
+    html+='<span onclick="delGoalSprint('+i+')" style="cursor:pointer;color:var(--ink4);font-size:18px">×</span>';
+    html+='</div>';
+  });
   el.innerHTML=html;
 }
+
 window._fn_addGoalSprint=function(){var inp=document.getElementById('goal-sprint-in');if(!inp)return;var tx=(inp.value||'').trim();if(!tx){inp.focus();return;}goals.sprint.push({text:tx,done:false});saveGoals();renderGoalSprint();inp.value='';};
 function addGoalSprint(){window._fn_addGoalSprint&&window._fn_addGoalSprint();}
 function toggleGoalSprint(i){if(!goals.sprint[i])return;goals.sprint[i].done=!goals.sprint[i].done;saveGoals();renderGoalSprint();}
@@ -2278,121 +2378,265 @@ function renderGymInline(){
 }
 
 
+
+
+
+
 // ── PUSH NOTIFICATIONS ───────────────────────────────────
-var _notifGranted=false;
-var _notifiedBlocks={};
+var _notifGranted=Notification&&Notification.permission==='granted';
+var _notifiedKeys={};
 
 function requestNotifPermission(){
   if(!('Notification' in window)){showToast('Trình duyệt không hỗ trợ thông báo');return;}
   if(Notification.permission==='granted'){
-    _notifGranted=true;
-    showToast('✓ Thông báo đã bật!');
-    ss('notif_on',true);
-    return;
+    _notifGranted=true;showToast('✓ Thông báo đã bật!');ss('notif_on',true);
+    updateNotifBtn();return;
   }
-  Notification.requestPermission().then(function(perm){
-    _notifGranted=perm==='granted';
+  Notification.requestPermission().then(function(p){
+    _notifGranted=p==='granted';
     if(_notifGranted){
-      showToast('✓ Thông báo đã bật!');
-      ss('notif_on',true);
-      new Notification('Empire OS ⚔', {body:'Thông báo War Schedule đã bật!',icon:'/icon-192.png'});
-    } else {
-      showToast('Bạn đã từ chối thông báo');
-      ss('notif_on',false);
-    }
+      ss('notif_on',true);showToast('✓ Thông báo đã bật!');updateNotifBtn();
+      sendNotif('Empire OS ⚔','Thông báo đã bật thành công!','test');
+    }else{showToast('Đã từ chối thông báo');}
   });
 }
 
-function sendNotif(title, body, tag){
-  if(!_notifGranted)return;
-  try{
-    new Notification(title,{
-      body:body,
-      tag:tag||'empire',
-      icon:'/icon-192.png',
-      badge:'/icon-192.png',
-      vibrate:[200,100,200],
-      requireInteraction:false
-    });
-  }catch(e){console.log('Notif error:',e);}
+function updateNotifBtn(){
+  var btn=document.getElementById('notif-btn');
+  if(!btn)return;
+  if(_notifGranted){btn.textContent='✓ Đang bật';btn.style.background='var(--grn)';btn.disabled=true;}
 }
 
-function checkWarNotif(){
+function sendNotif(title,body,tag){
+  if(!_notifGranted)return;
+  try{new Notification(title,{body:body,tag:tag||'empire',icon:'/icon-192.png',vibrate:[200,100,200]});}catch(e){}
+}
+
+function nKey(k){return (new Date().toDateString())+'_'+k;}
+
+function checkAllNotifs(){
   if(!_notifGranted)return;
   var now=new Date();
-  var nm=now.getHours()*60+now.getMinutes();
-  var dateKey=now.toDateString();
+  var h=now.getHours(),m=now.getMinutes();
+  var nm=h*60+m;
+  var dk=nKey('');
+
+  // 1. War Schedule blocks
   (WAR||[]).forEach(function(w,i){
-    var wm=tm(w.t);
-    // Notify at exact minute OR 1 min before
-    if(nm===wm||nm===wm-1){
-      var key=dateKey+'_'+i;
-      if(!_notifiedBlocks[key]){
-        _notifiedBlocks[key]=true;
-        var msg=nm===wm-1?'1 phút nữa: ':'Bắt đầu: ';
-        sendNotif('⚔ '+w.ti, msg+w.d.slice(0,60), 'war_'+i);
-      }
+    var wm=parseInt((w.t||'0:0').split(':')[0])*60+parseInt((w.t||'0:0').split(':')[1]||0);
+    if(nm===wm&&!_notifiedKeys[dk+'war'+i]){
+      _notifiedKeys[dk+'war'+i]=1;
+      sendNotif('⚔ '+w.ti,w.d.slice(0,80),'war_'+i);
     }
   });
-  // OBT reminder: 7:15 every day
-  if(nm===435){
-    var obtKey=dateKey+'_obt';
-    if(!_notifiedBlocks[obtKey]){
-      _notifiedBlocks[obtKey]=true;
-      var obt=OBTs.find(function(o){return o.date===tdk();});
-      if(obt&&!obt.done)sendNotif('◈ Core Dominance bắt đầu','Chỉ 1 việc: OBT. Deep Work 90p. Tắt thông báo.','obt');
+
+  // 2. Tasks/subtasks with time
+  (subtasks||[]).forEach(function(st,i){
+    if(!st.time||st.done)return;
+    var tp=st.time.split(':');var tm2=parseInt(tp[0])*60+parseInt(tp[1]||0);
+    if(nm===tm2&&!_notifiedKeys[dk+'st'+i]){
+      _notifiedKeys[dk+'st'+i]=1;
+      sendNotif('📋 Task: '+st.text,'Đã đến giờ làm việc này!','st_'+i);
     }
+  });
+
+  // 3. Weekly tasks with time
+  try{
+    var wkt=gs('wkt_'+getWeekKey(0),[]);
+    (wkt||[]).forEach(function(t,i){
+      if(!t.time||t.done)return;
+      var tp=t.time.split(':');var tm3=parseInt(tp[0])*60+parseInt(tp[1]||0);
+      if(nm===tm3&&!_notifiedKeys[dk+'wkt'+i]){
+        _notifiedKeys[dk+'wkt'+i]=1;
+        sendNotif('📋 Task tuần: '+t.text,'Đã đến giờ!','wkt_'+i);
+      }
+    });
+  }catch(e){}
+
+  // 4. End of day (21:00) → Daily review + Habit check
+  if(h===21&&m===0&&!_notifiedKeys[dk+'daily']){
+    _notifiedKeys[dk+'daily']=1;
+    // Check habits
+    var done=Object.keys(habits||{}).filter(function(k){return habits[k];}).length;
+    var total=(HABITS||[]).length;
+    sendNotif('✦ Review Tối','Hoàn thành '+done+'/'+total+' habits hôm nay. Viết review ngày!','daily_review');
   }
-  // Giờ Tỵ: 10:00
-  if(nm===600){
-    var gKey=dateKey+'_gioty';
-    if(!_notifiedBlocks[gKey]){
-      _notifiedBlocks[gKey]=true;
-      sendNotif('⚡ Giờ Tỵ · Quyết định','Hỏa cực thịnh. Chốt 3 ưu tiên. Quyết ở 70% data.','gioty');
-    }
+
+  // 5. End of week (Sunday 20:00) → Weekly review
+  if(now.getDay()===0&&h===20&&m===0&&!_notifiedKeys[dk+'weekly']){
+    _notifiedKeys[dk+'weekly']=1;
+    sendNotif('📊 Review Tuần','Cuối tuần rồi! Mở tab Review → Weekly để tổng kết tuần.','weekly_review');
+  }
+
+  // 6. End of month (last day, 20:00) → Monthly review
+  var tomorrow=new Date(now);tomorrow.setDate(tomorrow.getDate()+1);
+  if(tomorrow.getDate()===1&&h===20&&m===0&&!_notifiedKeys[dk+'monthly']){
+    _notifiedKeys[dk+'monthly']=1;
+    sendNotif('📅 Review Tháng','Cuối tháng! Mở tab Review → Tháng để tổng kết.','monthly_review');
+  }
+
+  // 7. Morning OBT reminder (07:15)
+  if(h===7&&m===15&&!_notifiedKeys[dk+'obt']){
+    _notifiedKeys[dk+'obt']=1;
+    var obt=(OBTs||[]).find(function(o){return o.date===tdk();});
+    if(!obt||!obt.done)sendNotif('◈ Core Dominance','Chỉ 1 việc: OBT. Deep Work 90p. Tắt thông báo.','obt');
+  }
+
+  // 8. Giờ Tỵ (10:00)
+  if(h===10&&m===0&&!_notifiedKeys[dk+'gioty']){
+    _notifiedKeys[dk+'gioty']=1;
+    sendNotif('⚡ Giờ Tỵ · Quyết định','Hỏa cực thịnh. Chốt 3 ưu tiên. Quyết ở 70% data.','gioty');
   }
 }
 
-// Auto-request on load if previously granted
-(function(){
-  if(Notification&&Notification.permission==='granted'){
-    _notifGranted=true;
-  }
-  // Check every minute
-  setInterval(checkWarNotif,60000);
-  setTimeout(checkWarNotif,3000);
+// Start polling every 30s for accuracy
+(function initNotif(){
+  if(Notification&&Notification.permission==='granted'){_notifGranted=true;setTimeout(updateNotifBtn,500);}
+  setInterval(checkAllNotifs,30000);
+  setTimeout(checkAllNotifs,2000);
 })();
 
+// ── Init ──
+(function(){
+  if(typeof Notification!=='undefined'&&Notification.permission==='granted')_notifGranted=true;
+  setInterval(checkAllNotifs,60000);
+  setTimeout(checkAllNotifs,5000);
+})();
+
+
+// ── GOAL ENHANCEMENTS ────────────────────────────────────
+function showGoalAddLong(){
+  var f=document.getElementById('goal-add-long-form');
+  if(f)f.style.display=f.style.display==='none'?'block':'none';
+}
+
+function renderGoalSummary(){
+  var el=document.getElementById('goal-summary');if(!el)return;
+  var long=goals.long||[];var m6p=(goals.m6&&goals.m6.personal)||[];var m6c=(goals.m6&&goals.m6.career)||[];
+  var sprint=goals.sprint||[];
+  var longDone=long.filter(function(g){return g.done;}).length;
+  var spDone=sprint.filter(function(g){return g.done;}).length;
+  var m6all=[].concat(m6p,m6c);var m6Done=m6all.filter(function(g){return g.done;}).length;
+  var cats=[
+    {ic:'&#128336;',label:'M\u1ed1c d\u00e0i',done:longDone,total:long.length,col:'var(--amber)'},
+    {ic:'&#128197;',label:'6 th\u00e1ng',done:m6Done,total:m6all.length,col:'var(--blu)'},
+    {ic:'&#9889;',label:'Sprint',done:spDone,total:sprint.length,col:'var(--grn)'},
+  ];
+  el.innerHTML=cats.map(function(c){
+    var pct=c.total?Math.round(c.done/c.total*100):0;
+    return '<div style="background:var(--bg3);border-radius:var(--rl);padding:12px;text-align:center;border:1px solid var(--b)">'
+      +'<div style="font-size:1.2rem;margin-bottom:4px">'+c.ic+'</div>'
+      +'<div style="font-size:0.643rem;color:var(--ink3);margin-bottom:4px">'+c.label+'</div>'
+      +'<div style="font-size:1.1rem;font-weight:800;color:'+c.col+'">'+c.done+'/'+c.total+'</div>'
+      +'<div style="height:3px;background:var(--b);border-radius:2px;margin-top:6px;overflow:hidden">'
+      +'<div style="height:100%;width:'+pct+'%;background:'+c.col+';border-radius:2px"></div>'
+      +'</div></div>';
+  }).join('');
+}
+
+// Enhance renderGoals to call summary
+var _origRenderGoals=renderGoals;
+renderGoals=function(){
+  _origRenderGoals();
+  try{renderGoalSummary();}catch(e){}
+};
+
+// ── LỊCH PROGRESS BAR ────────────────────────────────────
+function renderLichProgress(){
+  var start=new Date('2026-04-07').getTime();
+  var end=new Date('2027-03-31').getTime();
+  var now=Date.now();
+  var pct=Math.min(100,Math.max(0,Math.round((now-start)/(end-start)*100)));
+  var bar=document.getElementById('lich-progress-bar');
+  var pctEl=document.getElementById('lich-progress-pct');
+  if(bar)bar.style.width=pct+'%';
+  if(pctEl)pctEl.textContent=pct+'%';
+}
+
+var _origRenderLich=renderLich;
+renderLich=function(){
+  _origRenderLich();
+  try{renderLichProgress();}catch(e){}
+};
 </script>
 </body>
-</html
+</html>
 
 <!-- ══ GOAL ══ -->
 <div class="panel" id="p8">
-  <div style="margin:10px 0 14px"><div style="font-size:16px;font-weight:700">&#127919; Mục Tiêu</div><div style="font-size:11px;color:var(--ink4);margin-top:2px">Vision → Action</div></div>
-  <div class="card">
-    <div class="cl">&#128336; Mốc Dài Hạn</div>
+  <div style="margin:10px 0 12px">
+    <div style="font-size:18px;font-weight:800;color:var(--ink)">&#127919; Mục Tiêu</div>
+    <div style="font-size:11px;color:var(--ink4);margin-top:2px">Vision → Action → Daily Sprint</div>
+  </div>
+
+  <!-- Progress overview -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px" id="goal-summary"></div>
+
+  <!-- Long-term milestones timeline -->
+  <div class="card" style="padding:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="cl" style="margin:0">&#128336; Mốc Dài Hạn</div>
+      <button onclick="showGoalAddLong()" style="background:var(--g1);color:#fff;border:none;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer">+ Thêm</button>
+    </div>
     <div id="goal-long-list"></div>
-    <div style="background:var(--bg3);border:1px solid var(--b);border-radius:var(--r);padding:10px;margin-top:10px">
-      <div style="display:flex;gap:8px;margin-bottom:8px"><div style="flex:1"><label class="fl">Mốc thời gian</label><input class="fi" id="gl-date" placeholder="vd: 08/2030" style="font-size:12px"></div></div>
-      <div style="margin-bottom:8px"><label class="fl">Mục tiêu</label><input class="fi" id="gl-text" placeholder="Tái cấu trúc thành Terus Investor Group..." style="font-size:12px" onkeydown="if(event.key==='Enter')addGoalLong()"></div>
-      <button class="btn btn-primary" onclick="addGoalLong()" style="width:100%;font-size:12px">+ Thêm mốc</button>
+    <div id="goal-add-long-form" style="display:none;background:var(--bg3);border-radius:var(--r);padding:10px;margin-top:10px;border:1px solid var(--b)">
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <div style="flex:1"><label class="fl">Mốc thời gian</label><input class="fi" id="gl-date" placeholder="08/2030" style="font-size:12px"></div>
+        <div style="width:100px"><label class="fl">Danh mục</label>
+          <select class="fi" id="gl-cat" style="font-size:12px">
+            <option value="business">&#128200; Business</option>
+            <option value="life">&#127758; Life</option>
+            <option value="health">&#128170; Sức khỏe</option>
+            <option value="money">&#128176; Tiền</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:8px"><label class="fl">Mục tiêu</label>
+        <input class="fi" id="gl-text" placeholder="Tái cấu trúc thành Terus Investor Group..." style="font-size:12px" onkeydown="if(event.key==='Enter')addGoalLong()"></div>
+      <div style="display:flex;gap:8px">
+        <button onclick="addGoalLong()" class="btn btn-primary" style="flex:1;font-size:12px">+ Thêm</button>
+        <button onclick="document.getElementById('goal-add-long-form').style.display='none'" class="btn btn-outline" style="font-size:12px">Hủy</button>
+      </div>
     </div>
   </div>
-  <div class="card">
-    <div class="cl">&#128197; 6 Tháng Tới</div>
-    <div style="font-size:0.714rem;font-weight:700;color:var(--ink3);margin-bottom:6px;text-transform:uppercase">Cá Nhân</div>
-    <div id="goal-6m-personal"></div>
-    <div style="display:flex;gap:8px;margin-bottom:12px"><input class="fi" id="g6-personal-in" placeholder="Body chuẩn..." style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addGoal6m('personal')"><button class="btn-ic" onclick="addGoal6m('personal')">+</button></div>
-    <div style="font-size:0.714rem;font-weight:700;color:var(--ink3);margin-bottom:6px;text-transform:uppercase">Sự Nghiệp</div>
-    <div id="goal-6m-career"></div>
-    <div style="display:flex;gap:8px"><input class="fi" id="g6-career-in" placeholder="Gõ tay làm web..." style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addGoal6m('career')"><button class="btn-ic" onclick="addGoal6m('career')">+</button></div>
+
+  <!-- 6-month goals -->
+  <div class="card" style="padding:14px">
+    <div class="cl" style="margin-bottom:12px">&#128197; 6 Tháng Tới</div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:0.714rem;font-weight:700;color:var(--blu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">&#128100; Cá Nhân</div>
+      <div id="goal-6m-personal"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input class="fi" id="g6-personal-in" placeholder="Body chuẩn, học kỹ năng..." style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addGoal6m('personal')">
+        <button class="btn-ic" onclick="addGoal6m('personal')">+</button>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:0.714rem;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">&#128200; Sự Nghiệp</div>
+      <div id="goal-6m-career"></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input class="fi" id="g6-career-in" placeholder="Gõ tay, freelancer..." style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addGoal6m('career')">
+        <button class="btn-ic" onclick="addGoal6m('career')">+</button>
+      </div>
+    </div>
   </div>
-  <div class="card">
-    <div class="cl">&#9889; Sprint Tuần Này</div>
+
+  <!-- Weekly sprint -->
+  <div class="card" style="padding:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="cl" style="margin:0">&#9889; Sprint Tuần Này</div>
+      <span id="goal-sprint-progress" style="font-size:11px;font-weight:700;color:var(--grn)"></span>
+    </div>
     <div id="goal-sprint-list"></div>
-    <div style="display:flex;gap:8px;margin-top:10px"><input class="fi" id="goal-sprint-in" placeholder="Mục tiêu tuần..." style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addGoalSprint()"><button class="btn-ic" onclick="addGoalSprint()">+</button></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <input class="fi" id="goal-sprint-in" placeholder="Mục tiêu tuần..." style="flex:1;font-size:12px" onkeydown="if(event.key==='Enter')addGoalSprint()">
+      <button class="btn-ic" onclick="addGoalSprint()">+</button>
+    </div>
   </div>
-  <div class="card"><div class="cl">&#128203; Vision &amp; Notes</div><textarea class="fi" id="goal-vision" placeholder="Vision, why..." style="min-height:100px;resize:vertical" oninput="saveGoalVision()"></textarea></div>
+
+  <!-- Vision -->
+  <div class="card" style="padding:14px">
+    <div class="cl" style="margin-bottom:8px">&#128203; Vision &amp; Why</div>
+    <textarea class="fi" id="goal-vision" placeholder="Viết ra vision, why, người bạn muốn trở thành..." style="min-height:90px;resize:vertical" oninput="saveGoalVision()"></textarea>
+  </div>
 </div>
->
