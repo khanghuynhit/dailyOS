@@ -402,11 +402,22 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;b
 
 <!-- ══ GYM ══ -->
 <div class="panel" id="p2">
-  <div style="margin:10px 0 12px">
-    <div style="font-size:18px;font-weight:800">&#127947; Gym &amp; B&#417;i</div>
-    <div style="font-size:11px;color:var(--ink4);margin-top:2px">L&#7883;ch t&#7853;p + Ghi bu&#7893;i t&#7853;p</div>
+  <div class="stabs" style="margin-top:10px;margin-bottom:4px">
+    <div class="stab active" id="wt0" onclick="wtab(0)">&#9876; War Schedule</div>
+    <div class="stab" id="wt1" onclick="wtab(1)">&#127947; Gym &amp; B&#417;i</div>
   </div>
-
+  <div id="wp0">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0 12px"><div><div style="font-size:16px;font-weight:700">War Schedule</div><div style="font-size:11px;color:var(--ink4);margin-top:1px">Lịch chiến · Máy đẻ lợi thế</div></div><div style="font-size:12px;font-weight:700;color:var(--g2);background:var(--ambg);padding:4px 12px;border-radius:20px;border:1.5px solid var(--ambb)" id="wnow"></div></div>
+  <div class="war-tl" id="warsched"></div>
+  <div class="card" style="margin-top:14px">
+    <div class="cl">Power Score</div>
+    <div class="ptot"><div class="ptot-n" id="ptot">0<span style="font-size:15px;color:var(--ink4)">/50</span></div><div class="ptot-l">Chỉ số quyền lực · Terus</div></div>
+    <div id="pgrid"></div>
+    <button class="btn btn-gold" onclick="savePow()" style="margin-top:10px">Lưu Power Score</button>
+  </div>
+</div>
+  
+  <div id="wp1" style="display:none">
     <div class="card" style="margin-top:10px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div class="cl" style="margin:0">&#127947; Gym &amp; B&#417;i</div>
@@ -415,7 +426,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;b
 
       <!-- Date + muscle group selector -->
       <div style="display:flex;gap:8px;margin-bottom:12px">
-        <input class="fi" type="date" id="gym-date" style="flex:1;font-size:12px">
+        <input class="fi" type="date" id="gym-date" style="flex:1;font-size:12px" onchange="renderGymInline()">
         <select class="fi" id="gym-muscle" style="width:110px;font-size:12px" onchange="renderGymInline()">
           <option value="Ngực">&#128170; Ngực</option>
           <option value="Lưng">&#128692; Lưng</option>
@@ -673,6 +684,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;b
     </div>
     <div style="font-size:10px;color:var(--ink4);margin-top:8px">&#8226; C&#7847;n m&#7903; app trong background &#8226; iOS: Safari &#8594; Add to Home Screen tr&#432;&#7899;c</div>
   </div>
+  <div class="card" style="border:1.5px solid var(--grn);background:var(--gbg);margin-top:10px"><div class="cl" style="color:var(--grn)">&#127947; L&#7883;ch t&#7853;p Gym</div><div style="font-size:11px;color:var(--ink3);margin-bottom:12px">Ch&#7885;n nh&#243;m c&#417; · B&#7845;m chip &#273;&#7875; ch&#7885;n</div><div id="gym-day-cfg"></div><button onclick="saveGymDayCfg()" class="btn btn-grn" style="font-size:12px;margin-top:10px">&#128190; L&#432;u l&#7883;ch t&#7853;p</button><div id="gym-day-msg" style="font-size:11px;text-align:center;margin-top:6px;color:var(--grn);min-height:16px"></div></div>
   <div class="card" style="margin-top:10px">
     <div class="cl">⚙ Cài đặt</div>
     <div style="font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:14px">Tất cả lưu trong máy. Sửa xong bấm Lưu.</div>
@@ -837,6 +849,7 @@ function requestNotifPermission(){setTimeout(function(){if(typeof window._reqNot
 </div></div>
 
 <script>
+
 // ──
 // ── UTILS ──
 var gs=(k,d)=>{try{var v=localStorage.getItem(k);if(v==null)return d;var p=JSON.parse(v);return p!=null?p:d;}catch{return d;}};
@@ -949,6 +962,7 @@ function renderAll(){
   try{renderLearnHist();}catch(e){}
   try{renderSettingsUI();}catch(e){}
   try{updateStats();}catch(e){}
+  try{renderGoals();}catch(e){}
 }
 
 // ── NAV ──
@@ -959,7 +973,7 @@ function nav(el,i){
   var _p=document.getElementById('p'+i);if(_p)_p.classList.add('active');
   if(i===2)try{initGym();}catch(e){}
   if(i===6)try{renderWkPlan();}catch(e){}
-  if(i===7){try{renderSettingsUI();}catch(e){}try{loadCloudCfg();}catch(e){}}
+  if(i===7){try{renderSettingsUI();}catch(e){}try{loadCloudCfg();}catch(e){}try{renderGymDayCfg();}catch(e){}}
   if(i===8)try{renderGoals();}catch(e){}
 }
 function ltab(i){[0,1,2,3,4].forEach(j=>{var t=document.getElementById('lt'+j),p=document.getElementById('lp'+j);if(t&&p){if(j===i){t.classList.add('active');p.style.display='block';}else{t.classList.remove('active');p.style.display='none';}}});}
@@ -1756,7 +1770,7 @@ function setZoom(scale){
     _nav(el,i);
     if(i===2)try{initGym();}catch(e){}
   if(i===6)try{renderWkPlan();}catch(e){}
-    if(i===7){try{renderSettingsUI();}catch(e){}try{loadCloudCfg();}catch(e){}}
+    if(i===7){try{renderSettingsUI();}catch(e){}try{loadCloudCfg();}catch(e){}try{renderGymDayCfg();}catch(e){}}
   };
 })();
 
@@ -1837,6 +1851,17 @@ function cloudPush(){syncPush();}
 function cloudPull(){manualPull();}
 (function(){var _oSs=ss;ss=function(k,v){_oSs(k,v);var sk=['zoom','sb_url','sb_key','jb_','_local','_cloud','last_','sync_'];if(!sk.some(function(p){return k.indexOf(p)===0;}))schedulePush();};setTimeout(syncPull,3000);setInterval(syncPull,30000);setTimeout(loadCloudCfg,600);})();
 
+var _gymCfgRaw=gs('gym_day_cfg',null);
+
+var GYM_DAY_CFG=_gymCfgRaw&&Array.isArray(_gymCfgRaw[1])?_gymCfgRaw:{
+  0:[],1:['Ngực','Tay'],2:['Lưng','Vai'],3:[],4:['Chân','Bụng'],5:['Lưng','Tay'],6:['Full body']
+};
+
+var GYM_DAY_NAMES=['CN','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+
+var GYM_MUSCLE_OPTS=['Ngực','Lưng','Vai','Tay','Chân','Bụng','Bơi','Full body'];
+
+
 var GYM_DATA=[{"sheet": "Week 1 (217 - 267)", "exercises": {"Ngực": ["15kg", "15kg", "55kg", "45kg", "5kg"], "Lưng": ["Mức 7", "50kg", "25kg", "45kg", "10kg"], "Vai": ["55kg", "5kg", "7,5kg", "10kg", "Mức 5"], "Tay": ["Mức 7", "Mức 7", "Mức 5", "Mức 4", "Mức 4", "15kg"], "Chân": ["30kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Bơi": "1,5 km"}}, {"sheet": "Week 2 (287 - 28)", "exercises": {"Ngực": ["15kg", "20kg", "40kg", "50kg", "10kg", "Mức 1"], "Lưng": ["Mức 9", "65kg", "40kg", "45kg", "10kg (Kiếm bài thay thế bài này)"], "Vai": ["55kg", "5kg", "7,5kg", "10kg", "Mức 5"], "Tay": ["Mức 8", "Mức 8", "Mức 8", "Mức 8", "Mức 6", "12,5kg", "20kg", "10kg"], "Chân": ["30kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Bụng & Core": ["Mức 11", "10kg", "10kg"], "Bơi": "1,5 km"}}, {"sheet": "Week 3 (48 - 98)", "exercises": {"Ngực": ["20kg", "25kg", "40kg", "55kg", "10kg", "Mức 2"], "Lưng": ["Mức 8", "70kg", "45kg", "Mức 8", "10kg"], "Vai": ["60kg", "4kg", "10kg", "10kg", "Mức 6"], "Tay": ["Mức 8", "Mức 8", "Mức 8", "Mức 8", "Mức 6", "12,5kg", "20kg", "10kg"], "Chân": ["30kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Bụng & Core": ["Mức 11", "10kg", "10kg", "50kg"], "Bơi": "Bơi"}}, {"sheet": "Week 4 (118 - 168)", "exercises": {"Ngực": ["20kg", "20kg", "30kg", "55kg", "10kg", "Mức 2"], "Lưng": ["Mức 8", "70kg", "45kg", "Mức 8", "10kg"], "Vai": ["60kg", "4kg", "10kg", "10kg", "Mức 6"], "Tay": ["Mức 8", "Mức 8", "Mức 8", "Mức 8", "Mức 6", "12,5kg", "20kg", "10kg"], "Chân": ["30kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Bụng & Core": ["Mức 11", "10kg", "10kg", "50kg"], "Bơi": "Bơi"}}, {"sheet": "Week 5 (188 - 238)", "exercises": {"Ngực": ["25kg", "25kg", "30kg", "60kg", "10kg", "Mức 2"], "Lưng": ["Mức 9", "FULL", "50kg", "Mức 9", "10kg"], "Vai": ["65kg", "4kg", "12.5kg", "12.5kg", "Mức 7"], "Tay": ["Mức 9", "Mức 9", "Mức 9", "Mức 9", "Mức 7", "12,5kg", "25kg", "10kg"], "Chân": ["30kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Bụng & Core": ["Mức 11", "10kg", "10kg", "50kg"]}}, {"sheet": "Week 6 (258 - 308)", "exercises": {"Ngực": ["25kg", "25kg", "25kg", "60kg", "10kg", "Mức 2"], "Lưng": ["Mức 9", "FULL", "50kg", "Mức 9", "10kg"], "Vai": ["65kg", "4kg", "12.5kg", "12.5kg", "Mức 7"], "Tay": ["Mức 9", "Mức 9", "Mức 9", "Mức 9", "Mức 7", "12,5kg", "25kg", "10kg"], "Chân": ["30kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Bụng & Core": ["Mức 11", "10kg", "10kg", "50kg"]}}, {"sheet": "Week 7 (19 - 69)", "exercises": {"Ngực": ["30kg", "25kg", "25kg", "60kg", "10kg", "Mức 2"], "Lưng": ["Mức 10", "FULL", "50kg", "Mức 9"], "Vai": ["70kg", "5kg", "Mức 3", "12.5kg", "Mức 8"], "Tay": ["Mức 10", "Mức 10", "Mức 8", "30kg", "10kg"], "Chân": ["35kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Bụng & Core": ["Mức 11", "10kg", "10kg", "50kg"]}}, {"sheet": "Week 8 (89 - 139)", "exercises": {"Ngực": ["30kg", "25kg", "25kg", "60kg", "10kg", "Mức 2"], "Lưng": ["Mức 10", "FULL", "50kg", "Mức 9"], "Vai": ["70kg", "5kg", "Mức 3", "12.5kg", "Mức 8"], "Tay": ["Mức 10", "Mức 10", "Mức 8", "30kg"], "Chân": ["35kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Bụng & Core": ["Mức 11", "10kg", "10kg", "50kg"]}}, {"sheet": "Week 9 (159 - 219)", "exercises": {"Ngực": ["30kg", "25kg", "60kg", "Mức 10", "Mức 10"], "Lưng": ["Mức 10", "FULL", "Mức 9", "30kg", "Mức 8", "10kg", "50kg"], "Vai": ["70kg", "Mức 3", "12.5kg", "Mức 10", "Mức 10"], "Tay": ["35kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Chân": ["30kg", "25kg", "Mức 3", "Mức 10", "Mức 10", "10kg", "50kg"], "Bụng & Core": ["5kg", "Mức 3", "12.5kg", "12.5kg", "Mức 8"]}}, {"sheet": "Week 10 (229 - 289)", "exercises": {"Ngực": ["30kg", "25kg", "60kg", "Mức 10", "Mức 10"], "Lưng": ["Mức 10", "FULL", "Mức 9", "30kg", "Mức 8", "10kg", "50kg"], "Vai": ["70kg", "Mức 3", "12.5kg", "Mức 10", "Mức 10"], "Tay": ["35kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Chân": ["30kg", "25kg", "Mức 3", "Mức 10", "Mức 10", "10kg", "50kg"], "Bụng & Core": ["5kg", "Mức 3", "12.5kg", "12.5kg", "Mức 8"]}}, {"sheet": "Week 11 (299 - 510)", "exercises": {"Ngực": ["30kg", "15kg", "Mức 3", "Mức 3", "Mức 10", "Mức 10"], "Lưng": ["Mức 10", "FULL", "Mức 9", "30kg", "Mức 8", "10kg", "50kg"], "Vai": ["70kg", "Mức 3", "12.5kg", "Mức 10", "Mức 10"], "Tay": ["35kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Chân": ["30kg", "25kg", "25kg", "Mức 3", "Mức 10", "Mức 10", "10kg", "50kg"], "Bụng & Core": ["5kg", "Mức 3", "12.5kg", "12.5kg", "Mức 8"]}}, {"sheet": "Week 12 (610 - 1210)", "exercises": {"Ngực": ["30kg", "15kg", "Mức 3", "Mức 3", "Mức 10", "Mức 10"], "Lưng": ["Mức 10", "FULL", "Mức 9", "30kg", "Mức 8", "10kg", "50kg"], "Vai": ["70kg", "Mức 3", "12.5kg", "Mức 10", "Mức 10"], "Tay": ["35kg", "12 rep + 10kg", "12 rep + 15kg", "70kg"], "Chân": ["30kg", "25kg", "25kg", "Mức 3", "Mức 10", "Mức 10", "10kg", "50kg"], "Bụng & Core": ["5kg", "Mức 3", "12.5kg", "12.5kg", "Mức 8"]}}, {"sheet": "Week 13 (1310 - 1910)", "exercises": {"Ngực": ["35kg", "15kg", "Mức 4", "Mức 3", "Mức 10", "Mức 10"], "Lưng": ["Mức 11", "FULL", "Mức 10", "Mức 9", "10kg", "50kg"], "Vai": ["75kg", "Mức 3", "12.5kg", "Mức 10", "Mức 10"], "Tay": ["40kg", "12 rep + 10kg", "12 rep + 20kg", "70kg"], "Chân": ["35kg", "25kg", "5kg", "Mức 4", "Mức 10", "Mức 10", "10kg", "50kg"], "Bụng & Core": ["5kg", "Mức 3", "12.5kg", "12.5kg", "Mức 8"]}}, {"sheet": "Week 14 (2010 - 2610)", "exercises": {"Ngực": ["35kg", "15kg", "Mức 4", "Mức 3", "Mức 10", "Mức 10"], "Lưng": ["Mức 11", "FULL", "Mức 10", "Mức 9", "10kg", "50kg"], "Vai": ["75kg", "Mức 3", "12.5kg", "Mức 10", "Mức 10"], "Tay": ["40kg", "12 rep + 10kg", "12 rep + 20kg", "70kg"], "Chân": ["35kg", "25kg", "5kg", "Mức 4", "Mức 10", "Mức 10", "10kg", "50kg"], "Bụng & Core": ["5kg", "Mức 3", "12.5kg", "12.5kg", "Mức 8"]}}, {"sheet": "Week 15 (2710 - 211)", "exercises": {"Ngực": ["35kg", "15kg", "Mức 4", "Mức 3", "Mức 10", "Mức 10"], "Lưng": ["Mức 11", "FULL", "Mức 10", "Mức 9", "10kg", "50kg"], "Vai": ["75kg", "Mức 3", "12.5kg", "Mức 10", "Mức 10"], "Tay": ["40kg", "12 rep + 10kg", "12 rep + 20kg", "70kg"], "Chân": ["35kg", "25kg", "5kg", "Mức 4", "Mức 10", "Mức 10", "10kg", "50kg"], "Bụng & Core": ["5kg", "Mức 3", "12.5kg", "12.5kg", "Mức 8"]}}, {"sheet": "Week 16 (311 - 911)", "exercises": {"Ngực": ["50kg", "15kg", "Mức 4", "Mức 10", "Mức 13"], "Lưng": ["Mức 11", "FULL", "Mức 11", "Mức 9", "10kg"], "Vai": ["85kg", "Mức 3", "12.5kg", "Mức 10", "Mức 13"], "Tay": ["40kg", "12 rep + 10kg", "12 rep + 20kg", "70kg"], "Chân": ["50kg", "Mức 4", "Mức 10", "Mức 13", "10kg"], "Bụng & Core": ["5kg", "Mức 3", "12.5kg", "Mức 8"]}}, {"sheet": "2212 - 2812", "exercises": {"Ngực": ["50kg", "Mức 4", "Mức 10", "Mức 13"], "Lưng": ["Mức 11", "FULL", "Mức 11", "Mức 9", "10kg"], "Vai": ["85kg", "Mức 3", "12.5kg", "Mức 10", "Mức 13"], "Tay": ["40kg", "20kg"], "Chân": ["50kg", "Mức 4", "Mức 10", "Mức 13", "10kg"], "Bụng & Core": ["90kg", "Mức 3", "12.5kg", "Mức 9"], "Bơi": "Thứ 2: đạp xe 2km\nThứ 4: Boi 15 vong\nThứ 7: Nhay day 300c"}}, {"sheet": "2912 - 41", "exercises": {"Ngực": ["55kg", "Mức 4", "Mức 10", "Mức 14"], "Lưng": ["Mức 12", "FULL", "Mức 12", "Mức 10", "10kg"], "Vai": ["90kg", "Mức 3", "12.5kg", "Mức 10", "Mức 14"], "Tay": ["60kg", "40kg"], "Chân": ["55kg", "Mức 4", "Mức 10", "Mức 14", "10kg"], "Bụng & Core": ["90kg", "Mức 3", "12.5kg", "Mức 10"], "Bơi": "Thứ 2: đạp xe 3km\nThứ 4: Boi 18 vong\nThứ 7: Nhay day 400c"}}, {"sheet": "51 - 111", "exercises": {"Ngực": ["55kg", "Mức 4", "Mức 10", "Mức 14"], "Lưng": ["Mức 12", "FULL", "Mức 12", "Mức 10", "10kg"], "Vai": ["90kg", "Mức 3", "12.5kg", "Mức 10", "Mức 14"], "Tay": ["55kg", "Mức 4", "Mức 10", "Mức 14", "10kg"], "Chân": ["90kg", "Mức 3", "12.5kg", "Mức 10"], "Bụng & Core": ["60kg", "40kg"], "Bơi": "Thứ 2: đạp xe 3km\nThứ 4: Boi 18 vong\nThứ 7: Nhay day 400c"}}, {"sheet": "121 - 181", "exercises": {"Ngực": ["65kg", "Mức 5", "Mức 12"], "Lưng": ["Mức 14", "FULL", "Mức 13", "Mức 12", "10kg"], "Vai": ["Mức 3", "12.5kg", "Mức 12"], "Tay": ["100kg", "80kg"], "Chân": ["65kg", "Mức 5", "Mức 12", "10kg"], "Bụng & Core": ["Mức 3", "12.5kg", "Mức 12"], "Bơi": "Thứ 2: đạp xe 5km\nThứ 4: Boi 22 vong\nThứ 7: Nhay day 600c"}}, {"sheet": "191 - 251", "exercises": {"Ngực": ["70kg", "Mức 6", "Mức 13"], "Lưng": ["Mức 15", "FULL", "Mức 14", "Mức 13", "10kg"], "Vai": ["Mức 3", "12.5kg", "Mức 13"], "Tay": ["120kg", "100kg"], "Chân": ["70kg", "Mức 6", "Mức 13", "10kg"], "Bụng & Core": ["Mức 3", "12.5kg", "Mức 13"], "Bơi": "Thứ 2: đạp xe 7km\nThứ 4: Boi 25 vong\nThứ 7: Nhay day 700c"}}, {"sheet": "261 - 12", "exercises": {"Ngực": ["75kg", "Mức 6", "Mức 14"], "Lưng": ["Mức 16", "FULL", "Mức 15", "Mức 14", "10kg"], "Vai": ["Mức 3", "12.5kg", "Mức 14"], "Tay": ["140kg", "120kg"], "Chân": ["75kg", "Mức 6", "Mức 14", "10kg"], "Bụng & Core": ["Mức 3", "12.5kg", "Mức 14"], "Bơi": "Thứ 2: đạp xe 8km\nThứ 4: Boi 27 vong\nThứ 7: Nhay day 800c"}}, {"sheet": "22 - 82", "exercises": {"Ngực": ["80kg", "Mức 7", "Mức 15"], "Lưng": ["Mức 17", "FULL", "Mức 16", "Mức 15", "10kg"], "Vai": ["Mức 3", "12.5kg", "Mức 15"], "Tay": ["160kg", "140kg"], "Chân": ["80kg", "Mức 7", "Mức 15", "10kg"], "Bụng & Core": ["Mức 3", "12.5kg", "Mức 15"], "Bơi": "Thứ 2: đạp xe 9km\nThứ 4: Boi 28 vong\nThứ 7: Nhay day 1000c"}}, {"sheet": "92 - 152", "exercises": {"Ngực": ["85kg", "Mức 7", "Mức 16"], "Lưng": ["Mức 18", "FULL", "Mức 17", "Mức 16", "10kg"], "Vai": ["Mức 3", "12.5kg", "Mức 16"], "Tay": ["180kg", "140kg"], "Chân": ["85kg", "Mức 7", "Mức 16", "10kg"], "Bụng & Core": ["Mức 3", "12.5kg", "Mức 16"], "Bơi": "Thứ 2: đạp xe 10km\nThứ 4: Boi 29 vong\nThứ 7: Nhay day 1000c"}}, {"sheet": "162 - 222", "exercises": {"Ngực": ["90kg", "Mức 8", "Mức 17"], "Lưng": ["Mức 19", "FULL", "Mức 18", "Mức 17", "10kg"], "Vai": ["Mức 3", "12.5kg", "Mức 17"], "Tay": ["180kg", "140kg"], "Chân": ["90kg", "Mức 8", "Mức 17", "10kg"], "Bụng & Core": ["Mức 3", "12.5kg", "Mức 16"], "Bơi": "Thứ 2: đạp xe 12km\nThứ 4: Boi 30 vong\nThứ 7: Nhay day 1000c"}}];
 var LEARN_SCHED=[{"id": "T1", "dates": "07–13/04", "startDate": "2026-04-07", "topic": "Giải phẫu hệ thống — Reverse Engineering", "type": "Master", "rows": {"Mục tiêu": "Vẽ lại được Class Diagram + ERD từ bất kỳ project cũ nào không nhìn code", "Nhiệm vụ chính": "45' Vẽ: Mở project cũ, nhìn SQL → vẽ ERD + Class Diagram tay\n90' Code: Đọc Controller→Service→Repository, ghi chú luồng gọi\n15' Phản biện: \"Xóa class này, hệ thống vỡ ở đâu?\"", "Retail 8–9h": "Map ERD vừa vẽ vào database Retail thật. Tìm bảng chưa chuẩn, quan hệ còn lỏng.", "Checkpoint ✓": "✓ Vẽ ERD không tra cứu\n✓ Giải thích luồng Controller→DB\n✓ Tìm 3+ lỗ hổng logic project cũ"}}, {"id": "T2", "dates": "14–20/04", "startDate": "2026-04-14", "topic": "Database & Entity — Chuẩn hóa 3NF", "type": "Master", "rows": {"Mục tiêu": "Thiết kế schema đạt chuẩn 3NF, không trùng lặp, không mơ hồ", "Nhiệm vụ chính": "45' Vẽ: Vẽ ERD mới cho 1 domain tự chọn (tay)\n90' Code: Viết SQL tạo bảng + test join 3 bảng\n15' Phản biện: \"10.000 records — query này chậm không?\"", "Retail 8–9h": "Thiết kế schema Order Hub (Module 1.1): orders, line_items, channels, order_status. Chuẩn 3NF.", "Checkpoint ✓": "✓ Schema không vi phạm 3NF\n✓ SQL join 3 bảng không tra cứu\n✓ Giải thích từng quyết định kiểu dữ liệu"}}, {"id": "T3", "dates": "21–27/04", "startDate": "2026-04-21", "topic": "Flowchart & Exception Handling", "type": "Master", "rows": {"Mục tiêu": "Vẽ flowchart cho bất kỳ luồng nào với đầy đủ edge case, không bỏ nhánh", "Nhiệm vụ chính": "45' Vẽ: Vẽ flowchart 1 luồng nghiệp vụ (tay)\n90' Code: Thêm edge cases: hết hàng, timeout payment, rớt mạng, duplicate request\n15' Phản biện: Đóng vai hacker tìm lỗ hổng", "Retail 8–9h": "Vẽ State Machine đơn hàng Retail: CART→PAID→PROCESSING→SHIPPED→DELIVERED + tất cả nhánh lỗi và hoàn tiền.", "Checkpoint ✓": "✓ Mọi diamond có đủ 2 nhánh\n✓ 5+ edge case luồng thanh toán\n✓ State Machine không tra tài liệu"}}, {"id": "T4", "dates": "28/04–04/05", "startDate": "2026-04-28", "topic": "Mock PE — Thực chiến không AI", "type": "Master", "rows": {"Mục tiêu": "Tự code hoàn chỉnh 1 feature trong 90 phút từ tờ giấy trắng", "Nhiệm vụ chính": "45' Vẽ: Tự ra đề mini, vẽ flowchart + schema nháp ra giấy\n90' Code: Tắt internet + AI, code từ Controller→Service→Repository→SQL trong 90'\n15' Phản biện: Review lỗi — logic / syntax / thiếu kiến thức", "Retail 8–9h": "Code bộ khung Module 1.1 Order Hub: nhận đơn webhook Shopee, unified dashboard, auto-confirm khi đủ hàng.", "Checkpoint ✓": "✓ Feature hoàn thành 90' không AI\n✓ Tự debug 80%+ lỗi\n✓ Order Hub Retail có bộ khung chạy được"}}, {"id": "T5", "dates": "05–11/05", "startDate": "2026-05-05", "topic": "Sequence Diagram — Xương sống Logic", "type": "Master", "rows": {"Mục tiêu": "Nhìn vào bất kỳ feature nào, vẽ được Sequence Diagram đầy đủ trong 10 phút", "Nhiệm vụ chính": "45' Vẽ: Chọn 1 API endpoint, vẽ Sequence Diagram tay\n90' Code: Implement theo đúng Sequence Diagram đã vẽ\n15' Phản biện: So sánh diagram vs code thật — chỗ nào khác nhau và tại sao", "Retail 8–9h": "Vẽ Sequence Diagram luồng core: nhận đơn → kiểm tồn kho → xác nhận → push sang vận chuyển. Build Module 1.3 Catalog: schema SKU, multi-channel sync.", "Checkpoint ✓": "✓ 3 Sequence Diagram không tra tài liệu\n✓ Diagram có Alt/Opt frame\n✓ Code match 100% diagram"}}, {"id": "T6", "dates": "12–18/05", "startDate": "2026-05-12", "topic": "UML hoàn chỉnh — Class + Use Case", "type": "Master", "rows": {"Mục tiêu": "Vẽ được bộ UML 3 loại (Use Case + Class + Sequence) cho 1 module hoàn chỉnh", "Nhiệm vụ chính": "45' Vẽ: Vẽ 1 loại diagram (luân phiên Use Case / Class / Sequence)\n90' Code: Viết code/SQL từ Class Diagram vừa vẽ\n15' Phản biện: Tự review — đủ access modifier, relationship chưa?", "Retail 8–9h": "Build Module 1.2 Inventory Core: schema SKU với variants, stock reservation atomic (SELECT FOR UPDATE), low-stock alert, barcode scan flow. Redis cache tồn kho.", "Checkpoint ✓": "✓ 3 loại UML cho 1 module không tra cứu\n✓ Dùng được PlantUML/Mermaid\n✓ Inventory Core có stock reservation chạy được"}}, {"id": "T7", "dates": "19–25/05", "startDate": "2026-05-19", "topic": "SRS & Acceptance Criteria", "type": "Master", "rows": {"Mục tiêu": "Viết được SRS cho 1 feature mà developer đọc vào code được ngay không hỏi lại", "Nhiệm vụ chính": "45' Vẽ: Viết PRD 1 trang cho 1 feature (không code)\n90' Code: Expand PRD thành SRS đầy đủ với 5+ Acceptance Criteria\n15' Phản biện: Đóng vai developer — \"Đủ thông tin để code chưa?\"", "Retail 8–9h": "Viết SRS Module 1.4 Shipping Automation: multi-carrier (GHN/GHTK/J&T), auto label, failed delivery flow. AC gồm edge case: GHN timeout, địa chỉ sai, COD đối soát.", "Checkpoint ✓": "✓ SRS developer đọc không hỏi lại\n✓ 5+ AC có edge case\n✓ Non-functional req có số liệu đo được"}}, {"id": "T8", "dates": "26/05–01/06", "startDate": "2026-05-26", "topic": "Architecture — MVC chuẩn & Design Patterns", "type": "Master", "rows": {"Mục tiêu": "Tách biệt hoàn toàn Controller/Service/Repository, nhận biết được pattern trong code", "Nhiệm vụ chính": "45' Vẽ: Đọc 1 design pattern (Refactoring.Guru), vẽ diagram\n90' Code: Refactor code cũ áp dụng pattern vừa học\n15' Phản biện: \"Pattern này giải quyết gì? Khi nào KHÔNG dùng?\"", "Retail 8–9h": "Refactor Order Hub + Inventory theo MVC chuẩn. Factory pattern cho đa kênh (Shopee/TikTok/Website). Build Module 1.4 Shipping theo SRS đã viết T7.", "Checkpoint ✓": "✓ Phân biệt Service vs Repository\n✓ Nhận diện vi phạm MVC trong code người khác\n✓ Factory pattern không tra cứu"}}, {"id": "T9", "dates": "02–08/06", "startDate": "2026-06-02", "topic": "Concurrency & Transaction — Cạm bẫy nâng cao", "type": "Master", "rows": {"Mục tiêu": "Xử lý được race condition, deadlock, và distributed transaction trong thiết kế", "Nhiệm vụ chính": "45' Vẽ: Vẽ diagram concurrency scenario (2 user cùng thao tác)\n90' Code: Implement pessimistic/optimistic locking cho scenario đó\n15' Phản biện: \"1000 user cùng làm việc này — hệ thống chịu được không?\"", "Retail 8–9h": "Implement stock reservation atomic cho Retail: lock tồn kho trước khi gọi payment gateway. Thiết kế + code flowchart Flash Sale (100 sản phẩm / 10.000 user). Giải quyết vấn đề oversell thật đang gặp.", "Checkpoint ✓": "✓ Giải thích race condition + rollback khi lỗi\n✓ Flash Sale diagram không oversell\n✓ Retail: stock reservation chạy atomic"}}, {"id": "T10", "dates": "09–15/06", "startDate": "2026-06-09", "topic": "Performance & Optimization", "type": "Master", "rows": {"Mục tiêu": "Đọc code và chỉ ra được bottleneck trong 5 phút, biết cách tối ưu", "Nhiệm vụ chính": "45' Vẽ: Lấy 1 đoạn code cũ, phân tích Big-O của các query\n90' Code: Tối ưu: index, query optimization, caching\n15' Phản biện: Đo lại hiệu suất sau tối ưu — tốt hơn bao nhiêu %?", "Retail 8–9h": "Tối ưu query đơn hàng + tồn kho Retail: đọc EXPLAIN, thêm index đúng chỗ. Cache tồn kho real-time vào Redis. Identify và fix N+1 problem. Build Module 1.5 Unit Economics: per-order P&L tự động.", "Checkpoint ✓": "✓ Đọc EXPLAIN query và giải thích output\n✓ Fix N+1 problem\n✓ Retail: Redis cache tồn kho + Unit Economics chạy được"}}, {"id": "T11", "dates": "16–22/06", "startDate": "2026-06-16", "topic": "Code Review & Tầm soát hệ thống", "type": "Master", "rows": {"Mục tiêu": "Nhìn vào code người khác (hoặc AI) chỉ ra điểm gãy logic trong 30 giây", "Nhiệm vụ chính": "45' Vẽ: Lấy code AI generate, tìm bugs + anti-pattern\n90' Code: Viết lại phần lỗi theo chuẩn của mình\n15' Phản biện: Ghi lại pattern lỗi hay gặp → xây checklist review", "Retail 8–9h": "Review toàn bộ Retail code T1–T10: áp dụng DoD Enforcer. Tìm: logic bug, SQL injection, N+1. Build Module 1.6 Customer Profile: unified profile theo SĐT, purchase history, basic segmentation.", "Checkpoint ✓": "✓ Checklist review 10+ điểm\n✓ Review code AI chỉ ra 3+ lỗi trong 5'\n✓ Skill Radar +2 điểm mỗi trục vs tuần 1"}}, {"id": "T12", "dates": "23–29/06", "startDate": "2026-06-23", "topic": "Tư duy Leader — Tầm soát Business", "type": "Master", "rows": {"Mục tiêu": "Nhận bất kỳ yêu cầu kinh doanh mơ hồ nào và biến thành bộ hồ sơ kỹ thuật trong 1 tiếng", "Nhiệm vụ chính": "45' Vẽ: Lấy 1 quy trình nghiệp vụ thật, viết PRD + SRS\n90' Code: Vẽ đầy đủ UML + Flowchart cho quy trình đó\n15' Phản biện: \"Giao developer mới, họ code được không?\"", "Retail 8–9h": "Viết SRS Module 1.5 Unit Economics hoàn chỉnh: channel profitability, SKU profitability, daily P&L report. Vẽ flowchart: Nhập kho→Kiểm kho→Xuất kho→Báo cáo.", "Checkpoint ✓": "✓ SRS tồn kho viết xong trong 45'\n✓ Bộ UML 3 loại đầy đủ\n✓ Giao AI code theo SRS, fix output sai"}}, {"id": "T13", "dates": "30/06–05/07", "startDate": "2026-06-30", "topic": "Grand Mock + Thiết lập duy trì", "type": "Master", "rows": {"Mục tiêu": "Xác nhận đã đạt Master Level — thiết kế được bất kỳ hệ thống nào từ đầu", "Nhiệm vụ chính": "Ngày 1–2: Grand Mock — thiết kế Flash Sale hoàn chỉnh (SRS+UML+Flowchart+Pseudo-code) trong 3.5h không tra cứu\nNgày 3–4: Review toàn bộ 12 tuần. Cập nhật Skill Radar 6 trục.\nNgày 5–6: Thiết lập lịch duy trì 3x/tuần mini project. Xây thư viện cá nhân: template SRS, diagram, checklist.", "Retail 8–9h": "Retail GD1 hoàn chỉnh: 6 module core chạy được. 500–2.000 đơn/ngày không nhập tay. Automation >80% tác vụ vận hành. Chuẩn bị lộ trình GD2.", "Checkpoint ✓": "✓ Grand Mock hoàn thành không tra cứu\n✓ Skill Radar tất cả trục ≥ 7/10\n✓ Retail GD1: 6 module core chạy được"}}, {"id": "GD2·T1", "dates": "12–19/04", "startDate": "2026-04-12", "topic": "Module 2.1 — AI Content Engine (phần 1)", "type": "Retail GD2", "rows": {"Mục tiêu": "Thiết lập pipeline tự động tạo mô tả sản phẩm cho 50+ SKU cùng lúc", "Slot 8–9h sáng\n(T2,3,5,6)": "Thiết kế luồng: nhập thông số kỹ thuật SKU → AI viết mô tả → review → publish\nViết prompt template cho product description chuẩn SEO (kỹ thuật + lifestyle)\nTest batch generation: 10 SKU đầu tiên, so sánh chất lượng\nXây schema lưu trữ: content_templates, generated_content, review_status", "Checkpoint ✓": "✓ Pipeline hoàn chỉnh từ SKU data → draft content\n✓ Batch 10 SKU chạy trong < 5 phút\n✓ Schema lưu trữ không mất content khi retry"}}, {"id": "GD2·T2", "dates": "20–26/04", "startDate": "2026-04-20", "topic": "Module 2.1 — AI Content Engine (phần 2)", "type": "Retail GD2", "rows": {"Mục tiêu": "Multi-platform adapt: tự động chỉnh content theo từng kênh (Shopee/TikTok/Facebook)", "Slot 8–9h sáng\n(T2,3,5,6)": "Implement multi-platform adapter: Shopee dài, TikTok ngắn 15-30s script, Facebook caption + hashtag\nA/B variants: tạo 3-5 biến thể khác nhau cho cùng 1 SKU để test\nAuto-publish: lên lịch và đăng content tự động theo giờ tối ưu từng kênh\nTone consistency: giữ nhất quán giọng thương hiệu qua toàn bộ content", "Checkpoint ✓": "✓ 1 SKU → tự động tạo content cho 3 kênh khác nhau\n✓ A/B variants: 3 phiên bản không trùng ý tưởng\n✓ Auto-publish lên lịch không can thiệp thủ công"}}, {"id": "GD2·T3", "dates": "27/04–03/05", "startDate": "2026-04-27", "topic": "Module 2.2 — AI Shopping Assistant (phần 1)", "type": "Retail GD2", "rows": {"Mục tiêu": "Chatbot LLM trả lời được câu hỏi kỹ thuật về sản phẩm (switch, actuation force, layout)", "Slot 8–9h sáng\n(T2,3,5,6)": "Thiết kế knowledge base: thông số kỹ thuật toàn bộ catalog, FAQ, chính sách bảo hành\nXây prompt engineering cho product advisor: hỏi nhu cầu → gợi ý sản phẩm phù hợp\nImplement Tech Q&A: switch, hot-swap, actuation force, so sánh sản phẩm\nThiết kế conversation flow với LangChain: context window, memory, fallback", "Checkpoint ✓": "✓ Chatbot trả lời được 20+ câu hỏi kỹ thuật phổ biến\n✓ Product advisor gợi ý đúng theo nhu cầu (gaming/văn phòng/lập trình)\n✓ Fallback graceful khi không biết"}}, {"id": "GD2·T4", "dates": "04–10/05", "startDate": "2026-05-04", "topic": "Module 2.2 — AI Shopping Assistant (phần 2)", "type": "Retail GD2", "rows": {"Mục tiêu": "Chatbot xử lý order status, warranty, return — 95% cuộc hội thoại không cần người can thiệp", "Slot 8–9h sáng\n(T2,3,5,6)": "Implement order status lookup: khách hỏi → tra cứu đơn → trả lời real-time\nWarranty support: hướng dẫn quy trình, tra cứu thông tin bảo hành theo đơn hàng\nReturn/refund flow: hướng dẫn đổi trả, tạo yêu cầu tự động\nHandoff to human: detect khi không trả lời được → chuyển agent người thật\nMulti-channel: deploy trên website chat, Zalo OA, Facebook Messenger", "Checkpoint ✓": "✓ Order status lookup real-time\n✓ Handoff to human hoạt động đúng\n✓ Deploy được ít nhất 1 kênh (Zalo OA hoặc website)"}}, {"id": "GD2·T5", "dates": "11–17/05", "startDate": "2026-05-11", "topic": "Module 2.3 — Ad-Ops Automation", "type": "Retail GD2", "rows": {"Mục tiêu": "Tự động monitor ROAS, tắt/bật ads, scale budget — không cần marketing ops can thiệp hàng ngày", "Slot 8–9h sáng\n(T2,3,5,6)": "Kết nối API: Facebook Ads, TikTok Ads, Google Ads → pull ROAS từng mẫu real-time\nAuto pause: ROAS < 2.0 sau 48h → tự động dừng + gửi Slack alert\nAuto scale: ROAS > 4.0 → tự động tăng budget 20-50%\nBudget allocation: phân bổ ngân sách theo performance — kênh tốt hơn nhận nhiều budget hơn\nCompetitor pricing scrape: so sánh giá đối thủ hàng ngày, cảnh báo khi mình cao hơn đáng kể", "Checkpoint ✓": "✓ ROAS monitoring real-time không cần check thủ công\n✓ Auto pause/scale hoạt động đúng ngưỡng\n✓ Competitor pricing report tự động hàng ngày"}}, {"id": "GD2·T6", "dates": "18–24/05", "startDate": "2026-05-18", "topic": "Module 2.4 — Upsell & Retention Engine", "type": "Retail GD2", "rows": {"Mục tiêu": "Tự động gợi ý mua thêm sau mua và giữ chân khách — doanh thu chi phí marketing gần bằng 0", "Slot 8–9h sáng\n(T2,3,5,6)": "Post-purchase upsell: bàn phím cơ → tự động gợi ý keycap, wrist rest, lube kit phù hợp\nCross-sell logic: rule-based theo category — bàn phím cơ → switch puller + lube\nWin-back campaign: khách không mua > 60 ngày → tự động gửi ưu đãi qua Zalo/email\nBirthday offer: voucher sinh nhật tự động gửi 3 ngày trước (nếu có data)\nReview request: sau 7 ngày nhận hàng → tự động nhắc đánh giá trên sàn", "Checkpoint ✓": "✓ Post-purchase upsell trigger đúng thời điểm\n✓ Win-back campaign chạy không cần khởi động thủ công\n✓ Review request tự động — tăng được số review trên sàn"}}, {"id": "GD2·T7", "dates": "25–31/05", "startDate": "2026-05-25", "topic": "Module 2.5 — Loyalty Engine (phần 1)", "type": "Retail GD2", "rows": {"Mục tiêu": "Hệ thống tích điểm hoạt động: mỗi 1.000đ = 1 điểm, đổi voucher hoặc sản phẩm", "Slot 8–9h sáng\n(T2,3,5,6)": "Thiết kế schema: loyalty_accounts, point_transactions, tier_config, reward_catalog\nPoint system: mỗi 1.000đ chi tiêu = 1 điểm, tích điểm tự động sau khi đơn hoàn thành\nTier system: Member / Silver / Gold theo tổng chi tiêu 12 tháng — tự động upgrade\nReferral program: khách giới thiệu bạn mua → cả hai được cộng điểm tự động\nPoint expiry: điểm hết hạn sau 12 tháng → cảnh báo trước 30 ngày", "Checkpoint ✓": "✓ Tích điểm tự động sau mỗi đơn hoàn thành\n✓ Tier tự động upgrade khi đủ điều kiện\n✓ Referral logic không tính trùng"}}, {"id": "GD2·T8", "dates": "01–07/06", "startDate": "2026-06-01", "topic": "Module 2.5 — Loyalty Engine (phần 2) + Integration", "type": "Retail GD2", "rows": {"Mục tiêu": "Loyalty tích hợp đầy đủ với Order Hub, Inventory, Customer Profile", "Slot 8–9h sáng\n(T2,3,5,6)": "Tier benefits: mỗi hạng có ưu đãi riêng — freeship, ưu tiên hỗ trợ, sản phẩm mới sớm\nLoyalty analytics: retention rate, CLV theo tier, churn prediction cơ bản\nIntegration: loyalty điểm sync với Customer Profile (Module 1.6)\nOffline loyalty: khách mua tại cửa hàng vẫn tích điểm giống online (chuẩn bị cho GD3)\nTest end-to-end: đặt hàng → hoàn thành → điểm cộng → xem tier → đổi voucher", "Checkpoint ✓": "✓ End-to-end flow hoạt động không lỗi\n✓ Loyalty analytics dashboard hiển thị được retention rate\n✓ Integration với Customer Profile không conflict data"}}, {"id": "GD2·T9", "dates": "08–14/06", "startDate": "2026-06-08", "topic": "Integration & Automation Testing GD2", "type": "Retail GD2", "rows": {"Mục tiêu": "Toàn bộ GD2 hoạt động end-to-end: content tạo tự động, chatbot live, ads tự động, loyalty chạy", "Slot 8–9h sáng\n(T2,3,5,6)": "Integration test: Content Engine → Catalog sync → Multi-channel publish\nChatbot load test: 100 concurrent conversations không timeout\nAd-Ops: chạy thật 1 tuần, verify auto pause/scale hoạt động đúng\nRetention: verify win-back campaign trigger đúng điều kiện\nHệ thống monitoring: Datadog/Grafana cho tất cả GD2 modules\nKPIs review: CSKH tự động > 90%, Content cost giảm, Repeat purchase rate", "Checkpoint ✓": "✓ CSKH tự động > 90% không cần người can thiệp\n✓ Content generation batch 50 SKU trong < 5 phút\n✓ Ad-Ops auto pause/scale hoạt động đúng ngưỡng\n✓ Loyalty end-to-end không lỗi"}}, {"id": "GD2·T10", "dates": "15–28/06", "startDate": "2026-06-15", "topic": "Optimization & Handoff GD3 Prep", "type": "Retail GD2", "rows": {"Mục tiêu": "GD2 ổn định, tối ưu, sẵn sàng bàn giao — chuẩn bị data foundation cho GD3 Intelligence", "Slot 8–9h sáng\n(T2,3,5,6)": "Performance tuning: tối ưu latency chatbot < 2s, content generation < 30s/SKU\nData pipeline: đảm bảo behavioral tracking data sạch cho GD3 ML models\nA/B testing framework: đã chạy đủ experiment để có baseline\nDocumentation: SRS đầy đủ cho tất cả GD2 modules\nKPI final check: Repeat purchase rate > 30%, NPS tracking setup\nChuẩn bị GD3: list data requirements cho Demand Forecasting + Customer Intelligence", "Checkpoint ✓": "✓ Repeat purchase rate > 30%\n✓ Tất cả GD2 modules có SRS đầy đủ\n✓ Data pipeline sạch, sẵn sàng cho GD3 ML"}}, {"id": "GD3·T1", "dates": "06–12/07", "startDate": "2026-07-06", "topic": "Module 3.1 — SKU Decision Engine (phần 1)", "type": "Retail GD3", "rows": {"Mục tiêu": "Hệ thống tự động chấm điểm SKU theo margin, velocity, return rate, CAC, trend", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Thiết kế SKU scoring model: xác định 5 trục chấm điểm (margin, velocity, return rate, CAC, trend score)\nData pipeline: pull data từ Order Hub + Inventory + Unit Economics → tổng hợp\nViết scoring algorithm: weighted average có thể tune theo từng giai đoạn\nVisualize: dashboard SKU score board — sort by score, filter by category\nBacktest: test scoring model với 3 tháng data cũ, verify kết quả hợp lý", "Checkpoint ✓": "✓ SKU scoring chạy tự động hàng ngày không cần trigger thủ công\n✓ Dashboard hiển thị top 10 best/worst performing SKUs\n✓ Backtest cho thấy model phân biệt được SKU tốt/xấu"}}, {"id": "GD3·T2", "dates": "13–19/07", "startDate": "2026-07-13", "topic": "Module 3.1 — SKU Decision Engine (phần 2)", "type": "Retail GD3", "rows": {"Mục tiêu": "Kill/Scale recommendation: SKU điểm thấp 30 ngày → đề xuất dừng; SKU điểm cao → đề xuất scale", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Kill recommendation: SKU điểm thấp liên tục 30 ngày → auto đề xuất dừng bán + liquidate plan\nScale recommendation: SKU điểm cao → đề xuất tăng tồn, mở rộng marketing, tìm thêm supplier\nAssortment optimization: phân tích danh mục ABC — A-items ưu tiên, C-items giảm\nSeasonality detection: phát hiện pattern mùa vụ → điều chỉnh tồn kho trước mùa\nCompetitor gap: phát hiện sản phẩm đối thủ bán chạy mà mình chưa có", "Checkpoint ✓": "✓ Kill recommendation có đủ data justification trước khi người duyệt\n✓ Seasonality detection phát hiện được ít nhất 2 pattern từ data lịch sử\n✓ Competitor gap list có ≥ 5 SKU tiềm năng mỗi tháng"}}, {"id": "GD3·T3", "dates": "20–26/07", "startDate": "2026-07-20", "topic": "Module 3.1 — New SKU Test Framework", "type": "Retail GD3", "rows": {"Mục tiêu": "Tự động chọn 5-10 SKU mới để test mỗi tháng dựa trên trend + gap phân tích", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "New SKU selection criteria: trend score (search volume), gap analysis, margin potential\nTest framework: mỗi SKU mới có budget test giới hạn, thời gian test cố định (2-4 tuần)\nSuccess criteria: define rõ threshold để SKU test → full catalog\nFailure criteria: define rõ threshold để kill SKU test sớm (cut loss)\nAuto report: cuối chu kỳ test → tự động tổng hợp kết quả + recommendation", "Checkpoint ✓": "✓ Test framework chạy được 1 cycle hoàn chỉnh (selection → test → decision)\n✓ Success/failure criteria rõ ràng, measurable\n✓ Auto report không cần human tổng hợp thủ công"}}, {"id": "GD3·T4", "dates": "27/07–02/08", "startDate": "2026-07-27", "topic": "Module 3.2 — Experiment Engine (phần 1)", "type": "Retail GD3", "rows": {"Mục tiêu": "A/B testing framework: tự động phân chia traffic, đo kết quả, detect winner", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Traffic allocation engine: phân chia traffic tự động giữa các variant (statistical sound)\nPrice testing: test 3-5 mức giá khác nhau cho cùng SKU trên các segment khách\nContent A/B test: test 2-3 biến thể title, thumbnail, mô tả → chọn winner tự động\nWinner detection: tự động phát hiện winner khi đủ độ tin cậy thống kê (p < 0.05)\nExperiment log: log toàn bộ kết quả test → knowledge base cho quyết định sau", "Checkpoint ✓": "✓ Traffic allocation đúng tỷ lệ, không leak giữa variant\n✓ Statistical significance calculation chạy đúng (test với synthetic data)\n✓ Winner detection tự động không cần tính tay"}}, {"id": "GD3·T5", "dates": "03–09/08", "startDate": "2026-08-03", "topic": "Module 3.2 — Experiment Engine (phần 2)", "type": "Retail GD3", "rows": {"Mục tiêu": "Bundle testing, discount testing, auto-deploy winner — hệ thống test nhanh hơn đối thủ", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Bundle testing: test các combo khác nhau — bàn phím + switch / bàn phím + keycap / full setup\nDiscount testing: test mức giảm giá tối ưu — 5% vs 10% vs 15% → đo conversion và margin\nAuto-deploy winner: sau khi có winner → tự động áp dụng cho toàn bộ traffic (có người duyệt)\nExperiment calendar: lịch test không xung đột giữa các experiment chạy song song\nDashboard: tổng quan tất cả experiments đang chạy, status, kết quả sơ bộ", "Checkpoint ✓": "✓ Bundle test chạy được 1 experiment hoàn chỉnh\n✓ Auto-deploy sau khi người duyệt không cần can thiệp kỹ thuật\n✓ Không có experiment conflict (2 test cùng segment cùng lúc)"}}, {"id": "GD3·T6", "dates": "10–16/08", "startDate": "2026-08-10", "topic": "Module 3.3 — Demand Forecasting AI (phần 1)", "type": "Retail GD3", "rows": {"Mục tiêu": "Mô hình dự báo nhu cầu 30/60/90 ngày cho từng SKU dựa trên lịch sử bán", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Data preparation: clean và chuẩn hóa data lịch sử bán hàng cho ML training\nBaseline model: time series forecasting (ARIMA hoặc Prophet) cho 30-day forecast\nSKU-level forecast: model riêng cho từng SKU hoặc cluster theo category\nAccuracy metrics: MAPE, RMSE — đặt target accuracy cụ thể\nForecast dashboard: hiển thị dự báo vs actual cho mỗi SKU", "Checkpoint ✓": "✓ Baseline model MAPE < 20% cho SKUs có đủ data lịch sử\n✓ 30-day forecast chạy tự động hàng tuần\n✓ Dashboard hiển thị forecast vs actual cho top 100 SKUs"}}, {"id": "GD3·T7", "dates": "17–23/08", "startDate": "2026-08-17", "topic": "Module 3.3 — Demand Forecasting AI (phần 2)", "type": "Retail GD3", "rows": {"Mục tiêu": "Event-aware forecasting: tự động điều chỉnh dự báo khi có sale 11/11, 12/12, Tết", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Event calendar: database các sự kiện ảnh hưởng demand (11/11, 12/12, Tết, back-to-school)\nEvent multiplier: model học được demand spike theo từng loại event, từng category\nReorder automation: dựa trên forecast → tự động tạo PO draft gửi supplier approval\nSafety stock calc: tự động tính tồn kho an toàn theo lead time từng supplier\nNew product forecast: dự báo nhu cầu sản phẩm mới dựa trên sản phẩm tương tự lịch sử", "Checkpoint ✓": "✓ Event-aware forecast chính xác hơn baseline ≥ 15% trong period sale\n✓ Reorder PO tự động tạo không cần trigger thủ công\n✓ Safety stock tự động cập nhật khi lead time supplier thay đổi"}}, {"id": "GD3·T8", "dates": "24–30/08", "startDate": "2026-08-24", "topic": "Module 3.3 — Overstock & Multi-warehouse Optimization", "type": "Retail GD3", "rows": {"Mục tiêu": "Phát hiện SKU sắp tồn quá nhiều, tối ưu phân bổ hàng giữa các kho", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Overstock alert: phát hiện SKU dự báo tồn kho quá nhiều → đề xuất flash sale hoặc bundle\nMulti-warehouse optimization: tối ưu phân bổ hàng giữa các kho để giảm shipping cost\nMLflow integration: tracking experiments, model versioning, production deployment\nAirflow pipeline: schedule training, inference, và reorder automation\nA/B test forecast models: compare baseline vs improved model trên holdout set", "Checkpoint ✓": "✓ Overstock alert trigger trước ít nhất 2 tuần\n✓ Multi-warehouse allocation giảm average shipping cost ≥ 10%\n✓ MLflow tracking tất cả model versions"}}, {"id": "GD3·T9", "dates": "31/08–06/09", "startDate": "2026-08-31", "topic": "Module 3.4 — Customer Intelligence (phần 1)", "type": "Retail GD3", "rows": {"Mục tiêu": "Customer 360: hồ sơ đầy đủ với lịch sử mua, hành vi browse, CLV, churn probability", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Behavioral tracking: track trang xem, thời gian xem, click, thêm giỏ hàng, abandon\nCustomer 360 schema: merge data từ Order Hub, Loyalty, Chatbot → unified profile\nCLV calculation: tính Customer Lifetime Value theo RFM (Recency, Frequency, Monetary)\nSegment auto-update: tự động cập nhật segment khách theo hành vi mới nhất hàng ngày\nPrivacy compliance: tuân thủ Nghị định 13/2023 — consent management, data deletion", "Checkpoint ✓": "✓ Behavioral tracking không miss event quan trọng\n✓ CLV tính được cho ≥ 80% khách hàng active\n✓ Privacy compliance: có thể delete user data on request trong < 24h"}}, {"id": "GD3·T10", "dates": "07–13/09", "startDate": "2026-09-07", "topic": "Module 3.4 — Customer Intelligence (phần 2)", "type": "Retail GD3", "rows": {"Mục tiêu": "Product recommendation cá nhân hóa + Churn prediction + Dynamic pricing", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Product recommendation: Collaborative Filtering — gợi ý sản phẩm theo từng user\nChurn prediction model: ML model dự báo khách sắp không mua nữa → trigger win-back\nDynamic pricing: điều chỉnh giá hiển thị theo phân khúc khách (khách VIP thấy giá khác)\nCLV optimization: ưu tiên acquisition source có CLV cao, giảm đầu tư kênh CLV thấp\nPersonalization A/B test: đo được recommendation có tăng conversion không", "Checkpoint ✓": "✓ Recommendation tăng được click-through rate ≥ 10% (A/B test)\n✓ Churn prediction precision ≥ 70% (test trên holdout set)\n✓ Win-back campaign trigger tự động khi churn probability > threshold"}}, {"id": "GD3·T11", "dates": "14–20/09", "startDate": "2026-09-14", "topic": "Module 3.4 — Integration & Customer Intelligence Dashboard", "type": "Retail GD3", "rows": {"Mục tiêu": "Customer Intelligence tích hợp đầy đủ — data flywheel bắt đầu hoạt động", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Integration: Customer Intelligence → Upsell Engine → Ad-Ops → Loyalty Engine\nReal-time personalization: trang chủ website hiển thị sản phẩm cá nhân hóa theo user\nCustomer health dashboard: churn risk, CLV distribution, segment breakdown\nData flywheel check: verify càng nhiều data → model càng chính xác hơn\nKPI review: Repeat purchase rate > 40%, Churn rate < 10%/năm", "Checkpoint ✓": "✓ Data flywheel: model retrained tự động mỗi tuần với data mới\n✓ Repeat purchase rate > 40%\n✓ Churn rate < 10%/năm (tracking bắt đầu)"}}, {"id": "GD3·T12", "dates": "21–27/09", "startDate": "2026-09-21", "topic": "Module 3.5 — Supplier Intelligence (phần 1)", "type": "Retail GD3", "rows": {"Mục tiêu": "Chấm điểm NCC theo tỷ lệ hàng lỗi, tốc độ giao, độ chính xác đơn hàng, giá", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Supplier scoring model: 4 trục chấm điểm (quality, speed, accuracy, price competitiveness)\nData collection: tích hợp dữ liệu từ PO history, stock movement log, quality control log\nAuto switch logic: khi NCC điểm thấp → tự động chuyển đơn sang NCC backup (có người duyệt)\nLead time tracking: theo dõi thực tế lead time từng NCC → cập nhật safety stock\nPrice benchmarking: so sánh giá giữa các NCC cùng SKU → gợi ý đàm phán", "Checkpoint ✓": "✓ Supplier scoring chạy tự động hàng tháng\n✓ Auto switch recommendation có đủ data justification\n✓ Price benchmarking phát hiện được ít nhất 1 cơ hội đàm phán/tháng"}}, {"id": "GD3·T13", "dates": "28/09–04/10", "startDate": "2026-09-28", "topic": "Module 3.5 — Supplier Intelligence (phần 2) + Portal", "type": "Retail GD3", "rows": {"Mục tiêu": "Supplier portal: NCC tự báo cáo tồn kho, xác nhận PO, upload chứng từ online", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Exclusive deal tracker: quản lý sản phẩm exclusive/độc quyền — hết hạn, điều kiện, gia hạn\nQuality control log: nhập log hàng lỗi theo lô → phân tích pattern chất lượng theo NCC\nSupplier portal (MVP): web đơn giản cho NCC xác nhận PO, báo ngày giao, upload invoice\nAutomatic reconcile: PO confirmed vs hàng thực nhận → flag discrepancy tự động\nSupplier performance report: tự động gửi báo cáo hiệu suất cho NCC hàng tháng", "Checkpoint ✓": "✓ Supplier portal có ≥ 3 NCC active sử dụng\n✓ PO reconcile tự động không cần kế toán nhập tay\n✓ Quality pattern phát hiện được NCC có tỷ lệ lỗi cao"}}, {"id": "GD3·T14", "dates": "05–11/10", "startDate": "2026-10-05", "topic": "Module 3.6 — Omnichannel Operations (phần 1)", "type": "Retail GD3", "rows": {"Mục tiêu": "Unified inventory online-offline real-time — không bao giờ bán cùng 1 sản phẩm 2 lần", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Unified inventory engine: 1 tồn kho thật, multiple reservation channels (online + offline)\nConflict resolution: khi online và POS đặt cùng lúc → atomic transaction, 1 thắng, 1 fail gracefully\nShip-from-store: đơn online có thể ship từ cửa hàng gần nhất nếu kho trung tâm hết hàng\nClick & collect: khách mua online, đến cửa hàng lấy trong 2 giờ — flow từ đầu đến cuối\nPOS sync: mọi giao dịch tại quầy sync lên hệ thống trung tâm real-time", "Checkpoint ✓": "✓ Unified inventory không bao giờ oversell dù online và offline đặt đồng thời\n✓ Ship-from-store routing hoạt động tự động\n✓ Click & collect flow hoàn chỉnh từ order → pickup confirmation"}}, {"id": "GD3·T15", "dates": "12–18/10", "startDate": "2026-10-12", "topic": "Module 3.6 — Omnichannel Operations (phần 2)", "type": "Retail GD3", "rows": {"Mục tiêu": "Store transfer tự động, store performance dashboard, offline loyalty", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Store transfer: điều phối hàng giữa các cửa hàng tự động khi một kho hết, kho khác còn\nStore performance dashboard: so sánh hiệu quả từng cửa hàng — doanh thu, margin, traffic\nOffline loyalty: khách mua tại cửa hàng vẫn tích điểm loyalty giống online\nInventory allocation AI: tự động phân bổ hàng mới nhập giữa các kho theo predicted demand\nOffline-capable: POS và kho hoạt động khi mất internet, sync khi có lại", "Checkpoint ✓": "✓ Store transfer recommendation tự động\n✓ Offline loyalty sync real-time khi POS online trở lại\n✓ POS hoạt động offline ≥ 4 tiếng không mất data"}}, {"id": "GD3·T16", "dates": "19–25/10", "startDate": "2026-10-19", "topic": "Module 3.6 — Omnichannel + Integration Test", "type": "Retail GD3", "rows": {"Mục tiêu": "Omnichannel hoạt động seamless — khách không cảm nhận được ranh giới online/offline", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "End-to-end test: journey từ browse online → reserve → pickup in-store → loyalty tích điểm\nStress test: 100 concurrent POS transactions + 100 online orders cùng lúc\nData consistency check: inventory numbers khớp giữa tất cả channels\nMonitoring: alert khi sync delay > 30 giây giữa online và POS\nKPI: Stockout rate < 2%, Order accuracy rate > 99.5%", "Checkpoint ✓": "✓ No data inconsistency sau 48h stress test\n✓ Stockout rate < 2% (tracking across all channels)\n✓ Sync delay < 30 giây trong 99% cases"}}, {"id": "GD3·T17", "dates": "26/10–01/11", "startDate": "2026-10-26", "topic": "Module 3.7 — After-Sales & Warranty (phần 1)", "type": "Retail GD3", "rows": {"Mục tiêu": "Hệ thống bảo hành chuyên nghiệp: tự động tính ngày hết hạn, tạo claim, monitor SLA", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Warranty tracking: tự động tính ngày hết hạn bảo hành theo từng sản phẩm và lô hàng\nClaim management: khách tạo yêu cầu bảo hành online → tự động xác nhận và tạo case\nSLA monitoring: theo dõi thời gian xử lý bảo hành, cảnh báo khi sắp vi phạm cam kết\nDefect tracking: phân tích tỷ lệ lỗi theo SKU, batch, supplier → phản hồi về chất lượng\nReplacement flow: khi đổi sản phẩm → tự động tạo đơn mới, trừ kho, cập nhật bảo hành", "Checkpoint ✓": "✓ Warranty claim tạo và confirm trong < 2 phút\n✓ SLA alert trước khi vi phạm ít nhất 2 giờ\n✓ Defect tracking phát hiện được lô hàng lỗi cao"}}, {"id": "GD3·T18", "dates": "02–08/11", "startDate": "2026-11-02", "topic": "Module 3.7 — After-Sales (phần 2) + NPS Automation", "type": "Retail GD3", "rows": {"Mục tiêu": "NPS > 70 — hệ thống bảo hành trở thành lợi thế cạnh tranh rõ rệt so với shop thường", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "NPS survey: tự động gửi sau khi giải quyết bảo hành → đo NPS tự động\nWarranty analytics dashboard: tỷ lệ claim, chi phí bảo hành, SKU có tỷ lệ lỗi cao\nCSAT tracking: điểm hài lòng sau mỗi tương tác CSKH\nFirst contact resolution: tỷ lệ vấn đề giải quyết trong 1 lần liên hệ > 80%\nQuality feedback loop: defect data → Supplier Intelligence → supplier scoring update tự động", "Checkpoint ✓": "✓ NPS survey response rate > 30%\n✓ NPS score > 70 (target)\n✓ Warranty analytics tự động mà không cần báo cáo thủ công"}}, {"id": "GD3·T19–20", "dates": "09–22/11", "startDate": "2026-11-09", "topic": "Grand Integration — Toàn bộ GD3 chạy cùng nhau", "type": "Retail GD3", "rows": {"Mục tiêu": "Tất cả GD3 modules hoạt động đồng bộ — data flow xuyên suốt không gián đoạn", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Integration marathon: test toàn bộ data flow từ Order Hub → Customer Intelligence → Experiment Engine → SKU Decision\nData consistency audit: verify không có data inconsistency giữa các modules\nPerformance benchmark: đo latency, throughput của toàn hệ thống dưới load thực tế\nFallback testing: simulate từng module fail → verify hệ thống graceful degrade\nKPI dashboard: tất cả KPI investor muốn thấy hiển thị real-time", "Checkpoint ✓": "✓ Toàn bộ GD3 data flow không có broken link\n✓ System vẫn hoạt động khi 1 module fail (graceful degrade)\n✓ KPI dashboard investor-ready"}}, {"id": "GD3·T21–22", "dates": "23/11–06/12", "startDate": "2026-11-23", "topic": "Optimization & Scale Testing", "type": "Retail GD3", "rows": {"Mục tiêu": "Hệ thống xử lý được 10.000+ đơn/ngày với team 5-10 người core", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Load testing: simulate 10.000 đơn/ngày — đo breaking point của từng service\nBottleneck identification: tìm service nào chậm nhất, tốn resource nhất\nHorizontal scaling: ECS Fargate auto-scaling config cho order service, inventory service\nCaching optimization: Redis cache strategy cho tồn kho, recommendation, pricing\nCost optimization: review AWS bill — identify các resource không cần thiết", "Checkpoint ✓": "✓ System xử lý 10.000 đơn/ngày không timeout\n✓ Auto-scaling hoạt động khi traffic spike 3x\n✓ AWS cost / đơn giảm ≥ 20% sau optimization"}}, {"id": "GD3·T23–24", "dates": "07–20/12", "startDate": "2026-12-07", "topic": "IPO/Due Diligence Readiness", "type": "Retail GD3", "rows": {"Mục tiêu": "Hệ thống export được đủ KPI và audit trail cho investor due diligence bất cứ lúc nào", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "KPI export: tự động generate báo cáo investor KPIs (NPS, inventory turn, gross margin, GMV)\nAudit trail verification: mọi hành động có log đầy đủ, queryable\nData room preparation: export 12 tháng data sạch cho due diligence\nSecurity review: penetration test cơ bản, API authentication audit\nDocumentation: SRS đầy đủ cho tất cả 13 modules (GD1+GD2+GD3)", "Checkpoint ✓": "✓ Investor KPI report tự động generate trong < 1 phút\n✓ Audit trail đầy đủ cho 12 tháng gần nhất\n✓ Security: không có critical vulnerability"}}, {"id": "GD3·T25", "dates": "21–27/12", "startDate": "2026-12-21", "topic": "Grand Review & Roadmap 2027", "type": "Retail GD3", "rows": {"Mục tiêu": "Xác nhận đã đạt \"Retail Tech Company\" — sẵn sàng gọi vốn Series A", "Nhiệm vụ\n(8–9h sáng T2,3,5,6)": "Final KPI check: NPS > 70, Inventory turn > 8x, Gross margin > 25%, Repeat rate > 40%\nSkill Radar update: tất cả trục so với 12 tháng trước\nRoadmap 2027: thiết lập lộ trình GD4 (AI-native, B2B, international expansion)\nTeam planning: xác định vị trí cần thuê khi vào vòng gọi vốn\nCelebration checkpoint: nhìn lại từ 07/04/2026 — đã build được gì", "Checkpoint ✓": "✓ Tất cả KPI investor đạt benchmark\n✓ Có roadmap 2027 cụ thể\n✓ Hệ thống hoạt động tự động > 85% tác vụ vận hành"}}];
 var LICH_PHASES=[{"phase": "Master GD1 + Retail GD1", "dates": "07/04 → 05/07/2026", "focus": "Nền tảng kỹ thuật + vận hành 6 module core"}, {"phase": "Retail GD2", "dates": "12/04 → 05/07/2026", "focus": "AI Content · Chatbot · Ad-Ops · Loyalty"}, {"phase": "Retail GD3", "dates": "06/07 → 27/12/2026", "focus": "Intelligence Engine · SKU AI · Demand Forecast"}, {"phase": "IELTS Prep", "dates": "11/2026 → 04/2027", "focus": "Speaking + Writing + Mock Test → 8.0"}];
@@ -1883,8 +1908,9 @@ window._fn_saveGymLog=function(){
   renderGymHist();schedulePush();
 };
 
-function addGymRow(){window._fn_addGymRow&&window._fn_addGymRow();}
-function saveGymLog(){window._fn_saveGymLog&&window._fn_saveGymLog();}
+function addGymRow(){var c=document.getElementById('gym-rows');if(!c)return;var row=document.createElement('div');row.className='gym-row';row.style.cssText='display:flex;gap:6px;margin-bottom:6px;align-items:center';row.innerHTML='<input class="fi gym-name-inp" placeholder="Tên bài" style="flex:2;font-size:12px"><input class="fi gym-inline-inp" data-cat="custom" data-idx="0" placeholder="Set×Rep" style="width:72px;font-size:11px"><input class="fi gym-inline-inp-kg" data-cat="custom" data-idx="0" placeholder="kg" style="width:48px;font-size:11px"><span onclick="rmGymRow(this)" style="cursor:pointer;font-size:18px">×</span>';c.appendChild(row);}
+function saveGymLog(){if(window._fn_saveGymLog)window._fn_saveGymLog();}
+
 function renderGymHist(){
   var el=document.getElementById('gym-hist');var cnt=document.getElementById('gym-cnt');if(!el)return;
   var log=gs('gym_log',[]);if(cnt)cnt.textContent=log.length+' buổi';
@@ -1894,6 +1920,7 @@ function renderGymHist(){
   log.slice(0,20).forEach(function(e,li){var col=COL[e.muscle]||'var(--ink2)';html+='<div style="padding:10px;border-radius:var(--r);background:var(--bg3);border:1px solid var(--b);margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:0.786rem;font-weight:700;color:'+col+'">'+e.muscle+'</span><div style="display:flex;gap:8px;align-items:center"><span style="font-size:0.714rem;color:var(--ink4)">'+e.date+'</span><span onclick="delGymLog('+li+')" style="cursor:pointer;color:var(--ink4);font-size:14px">&#215;</span></div></div>';e.exercises.forEach(function(ex){html+='<div style="display:flex;gap:8px;font-size:0.786rem;color:var(--ink2);padding:2px 0"><span style="font-weight:600;flex:2">'+ex.name+'</span><span style="color:var(--ink3)">'+ex.sets+'</span><span style="font-weight:700;color:'+col+'">'+ex.kg+'</span></div>';});if(e.note)html+='<div style="font-size:0.714rem;color:var(--ink4);margin-top:5px;padding-top:5px;border-top:1px solid var(--b)">'+e.note+'</div>';html+='</div>';});
   el.innerHTML=html;
 }
+
 function delGymLog(i){var log=gs('gym_log',[]);log.splice(i,1);ss('gym_log',log);renderGymHist();}
 
 // ── GOAL ─────────────────────────────────────────────────
@@ -1901,7 +1928,7 @@ var goals=gs('goals',{long:[],m6:{personal:[],career:[]},sprint:[],vision:''});
 if(!goals.long)goals.long=[];if(!goals.m6)goals.m6={personal:[],career:[]};if(!goals.sprint)goals.sprint=[];
 function saveGoals(){ss('goals',goals);schedulePush();}
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function renderGoals(){renderGoalLong();renderGoal6m();renderGoalSprint();var v=document.getElementById('goal-vision');if(v)v.value=goals.vision||'';}
+function renderGoals(){renderGoalLong();renderGoal6m();renderGoalSprint();var v=document.getElementById('goal-vision');if(v)v.value=goals.vision||'';try{renderGoalSummary();}catch(e){}}
 function renderGoalLong(){
   var el=document.getElementById('goal-long-list');if(!el)return;
   if(!goals.long.length){
@@ -1928,7 +1955,7 @@ function renderGoalLong(){
   el.innerHTML=html;
 }
 
-function addGoalLong(){window._fn_addGoalLong&&window._fn_addGoalLong();}
+function addGoalLong(){var d=document.getElementById('gl-date'),t=document.getElementById('gl-text');if(!t)return;var tx=(t.value||'').trim();if(!tx){t.focus();return;}goals.long.push({date:(d&&d.value||'').trim(),text:tx,done:false});goals.long.sort(function(a,b){return(a.date||'').localeCompare(b.date||'');});saveGoals();renderGoalLong();if(d)d.value='';t.value='';var f=document.getElementById('goal-add-long-form');if(f)f.style.display='none';}
 function toggleGoalLong(i){if(!goals.long[i])return;goals.long[i].done=!goals.long[i].done;saveGoals();renderGoalLong();}
 function delGoalLong(i){if(!confirm('Xóa?'))return;goals.long.splice(i,1);saveGoals();renderGoalLong();}
 function renderGoal6m(){
@@ -1952,7 +1979,7 @@ function renderGoal6m(){
 }
 
 window._fn_addGoal6m=function(cat){var inp=document.getElementById('g6-'+cat+'-in');if(!inp)return;var tx=(inp.value||'').trim();if(!tx){inp.focus();return;}if(!goals.m6[cat])goals.m6[cat]=[];goals.m6[cat].push({text:tx,done:false});saveGoals();renderGoal6m();inp.value='';};
-function addGoal6m(cat){window._fn_addGoal6m&&window._fn_addGoal6m(cat);}
+function addGoal6m(cat){var inp=document.getElementById('g6-'+cat+'-in');if(!inp)return;var tx=(inp.value||'').trim();if(!tx){inp.focus();return;}if(!goals.m6[cat])goals.m6[cat]=[];goals.m6[cat].push({text:tx,done:false});saveGoals();renderGoal6m();inp.value='';}
 function toggleGoal6m(cat,i){if(!goals.m6[cat]||!goals.m6[cat][i])return;goals.m6[cat][i].done=!goals.m6[cat][i].done;saveGoals();renderGoal6m();}
 function delGoal6m(cat,i){if(!goals.m6[cat])return;goals.m6[cat].splice(i,1);saveGoals();renderGoal6m();}
 function renderGoalSprint(){
@@ -1978,11 +2005,11 @@ function renderGoalSprint(){
 }
 
 window._fn_addGoalSprint=function(){var inp=document.getElementById('goal-sprint-in');if(!inp)return;var tx=(inp.value||'').trim();if(!tx){inp.focus();return;}goals.sprint.push({text:tx,done:false});saveGoals();renderGoalSprint();inp.value='';};
-function addGoalSprint(){window._fn_addGoalSprint&&window._fn_addGoalSprint();}
+function addGoalSprint(){var inp=document.getElementById('goal-sprint-in');if(!inp)return;var tx=(inp.value||'').trim();if(!tx){inp.focus();return;}goals.sprint.push({text:tx,done:false});saveGoals();renderGoalSprint();inp.value='';}
 function toggleGoalSprint(i){if(!goals.sprint[i])return;goals.sprint[i].done=!goals.sprint[i].done;saveGoals();renderGoalSprint();}
 function delGoalSprint(i){goals.sprint.splice(i,1);saveGoals();renderGoalSprint();}
 window._fn_saveGoalVision=function(){goals.vision=(document.getElementById('goal-vision')||{}).value||'';saveGoals();};
-function saveGoalVision(){window._fn_saveGoalVision&&window._fn_saveGoalVision();}
+function saveGoalVision(){goals.vision=(document.getElementById('goal-vision')||{}).value||'';saveGoals();}
 
 // ── LỊCH HỌC ─────────────────────────────────────────────
 var _lf='all';
@@ -2328,11 +2355,12 @@ function deleteConcept(i){
   concepts.splice(i,1);ss('concepts',concepts);closeConceptDetail();
 }
 
+
 function initGym(){
   var d=document.getElementById('gym-date');
   if(d&&!d.value)d.value=new Date().toISOString().slice(0,10);
   // Auto-select today's muscle group based on schedule
-  var started=new Date('2026-04-07');
+  var started=new Date('2026-04-13');
   var wi=Math.max(0,Math.min(Math.floor((Date.now()-started)/604800000),(GYM_DATA.length-1)));
   var lbl=document.getElementById('gym-week-label');
   if(lbl)lbl.textContent='Tuần '+(wi+1)+' / '+GYM_DATA.length;
@@ -2342,38 +2370,90 @@ function initGym(){
 
 function renderGym(){renderGymInline();}
 
+
 function renderGymInline(){
   var el=document.getElementById('gym-inline-rows');if(!el)return;
-  var started=new Date('2026-04-07');
-  var wi=Math.max(0,Math.min(Math.floor((Date.now()-started)/604800000),(GYM_DATA.length-1)));
+  var dateEl=document.getElementById('gym-date');
+  var dateVal=dateEl&&dateEl.value?new Date(dateEl.value):new Date();
+  var started=new Date('2026-04-13');
+  var wi=Math.max(0,Math.min(Math.floor((dateVal-started)/604800000),(GYM_DATA.length-1)));
+  var dow=dateVal.getDay();
+  var dayMuscles=Array.isArray(GYM_DAY_CFG[dow])?GYM_DAY_CFG[dow]:
+                  (GYM_DAY_CFG[dow]&&GYM_DAY_CFG[dow]!=='Nghỉ'?[GYM_DAY_CFG[dow]]:[]);
+  var dayLabel=GYM_DAY_NAMES[dow];
   var ex=((GYM_DATA[wi])||{}).exercises||{};
   var COL={'Ngực':'var(--red)','Lưng':'var(--blu)','Vai':'#8b5cf6','Tay':'var(--amber)',
-           'Chân':'var(--grn)','Bụng & Core':'var(--ink2)','Bơi':'#06b6d4'};
+           'Chân':'var(--grn)','Bụng & Core':'var(--ink2)','Bụng':'var(--ink2)',
+           'Bơi':'#06b6d4','Full body':'var(--g2)','Full':'var(--g2)'};
+
+  // Auto-select first muscle in dropdown
+  var mu=document.getElementById('gym-muscle');
+  if(mu&&dayMuscles.length){
+    for(var oi=0;oi<mu.options.length;oi++){
+      if(mu.options[oi].value===dayMuscles[0]){mu.selectedIndex=oi;break;}
+    }
+  }
+
   var html='';
-  Object.keys(ex).forEach(function(cat){
-    var vals=ex[cat];if(!vals||(Array.isArray(vals)&&!vals.length))return;
-    var col=COL[cat]||'var(--ink2)';
-    var isSwim=typeof vals==='string';
-    html+='<div style="margin-bottom:12px;border:1.5px solid '+col+'30;border-radius:var(--r);overflow:hidden">';
-    html+='<div style="background:'+col+'12;padding:7px 10px"><span style="font-size:0.714rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:'+col+'">'+cat+'</span></div>';
-    if(isSwim){
-      html+='<div style="display:flex;gap:6px;align-items:center;padding:8px 10px">';
-      html+='<input class="fi gym-name-inp" value="Bơi" style="flex:2;font-size:12px">';
-      html+='<input class="fi gym-inline-inp" data-cat="'+cat+'" data-name-ref=".prev" placeholder="km" style="flex:1;font-size:12px">';
-      html+='</div>';
+  if(!dayMuscles.length){
+    html='<div style="text-align:center;padding:24px 0"><div style="font-size:32px;margin-bottom:8px">😴</div><div style="font-size:13px;color:var(--ink4)">Ngày nghỉ · Phục hồi</div><div style="font-size:11px;color:var(--ink4);margin-top:4px">Setup lịch tập trong tab ⚙ Setup</div></div>';
+    el.innerHTML=html;return;
+  }
+
+  html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">';
+  html+='<span style="font-size:12px;font-weight:700;color:var(--ink3)">'+dayLabel+' ·</span>';
+  dayMuscles.forEach(function(m){
+    var col=COL[m]||'var(--ink3)';
+    html+='<span style="font-size:11px;font-weight:800;color:'+col+';background:'+col+'15;padding:4px 12px;border-radius:20px">'+m+'</span>';
+  });
+  html+='<span style="font-size:10px;color:var(--ink4);margin-left:auto">Tuần '+(wi+1)+'</span>';
+  html+='</div>';
+
+  // For each muscle group, show its exercises
+  var anyMatch=false;
+  dayMuscles.forEach(function(muscle){
+    var col=COL[muscle]||'var(--ink3)';
+    // Find matching key in exercises
+    var matchKey=null;
+    Object.keys(ex).forEach(function(cat){
+      if(cat===muscle||cat===muscle+' & Core'||(muscle==='Full body'&&cat==='Full')||
+         cat.indexOf(muscle)>=0||muscle.indexOf(cat)>=0)matchKey=cat;
+    });
+    html+='<div style="margin-bottom:14px">';
+    html+='<div style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:'+col+';margin-bottom:8px;padding:6px 10px;background:'+col+'10;border-radius:var(--r);border-left:3px solid '+col+'">'+muscle+'</div>';
+
+    if(matchKey){
+      anyMatch=true;
+      var vals=ex[matchKey];
+      var isSwim=typeof vals==='string';
+      if(isSwim){
+        html+='<div style="display:flex;gap:6px;align-items:center;padding:7px;border-radius:var(--r);background:var(--bg3);margin-bottom:6px">';
+        html+='<input class="fi gym-name-inp" value="Bơi" style="flex:2;font-size:12px">';
+        html+='<input class="fi gym-inline-inp" data-cat="'+matchKey+'" data-idx="0" placeholder="km" style="flex:1;font-size:12px">';
+        html+='</div>';
+      } else {
+        vals.forEach(function(v,idx){
+          html+='<div style="display:flex;gap:6px;align-items:center;padding:7px;border-radius:var(--r);background:var(--bg3);margin-bottom:6px">';
+          html+='<span style="font-size:11px;font-weight:700;color:'+col+';width:18px;text-align:center;flex-shrink:0">'+(idx+1)+'</span>';
+          html+='<input class="fi gym-name-inp" value="'+v.replace(/"/g,'&quot;')+'" style="flex:2;font-size:12px;min-width:0">';
+          html+='<input class="fi gym-inline-inp" data-cat="'+matchKey+'" data-idx="'+idx+'" placeholder="Set×Rep" style="width:72px;font-size:11px;flex-shrink:0">';
+          html+='<input class="fi gym-inline-inp-kg" data-cat="'+matchKey+'" data-idx="'+idx+'" placeholder="kg" style="width:48px;font-size:11px;flex-shrink:0">';
+          html+='</div>';
+        });
+      }
     } else {
-      vals.forEach(function(v,idx){
-        html+='<div style="display:flex;gap:6px;align-items:center;padding:6px 10px;border-top:1px solid '+col+'15">';
-        // Editable name pre-filled with schedule ref
-        html+='<input class="fi gym-name-inp" value="'+v.replace(/"/g,'&quot;')+'" style="flex:2;font-size:11px;min-width:0" placeholder="Tên bài...">';
-        html+='<input class="fi gym-inline-inp" data-cat="'+cat+'" data-idx="'+idx+'" placeholder="Set×Rep" style="width:70px;font-size:11px;flex-shrink:0">';
-        html+='<input class="fi gym-inline-inp-kg" data-cat="'+cat+'" data-idx="'+idx+'" placeholder="kg" style="width:48px;font-size:11px;flex-shrink:0">';
+      // No schedule → blank rows
+      [0,1,2,3].forEach(function(idx){
+        html+='<div style="display:flex;gap:6px;align-items:center;padding:7px;border-radius:var(--r);background:var(--bg3);margin-bottom:6px">';
+        html+='<span style="font-size:11px;font-weight:700;color:'+col+';width:18px;text-align:center;flex-shrink:0">'+(idx+1)+'</span>';
+        html+='<input class="fi gym-name-inp" placeholder="Tên bài tập..." style="flex:2;font-size:12px;min-width:0">';
+        html+='<input class="fi gym-inline-inp" data-cat="'+muscle+'" data-idx="'+idx+'" placeholder="Set×Rep" style="width:72px;font-size:11px;flex-shrink:0">';
+        html+='<input class="fi gym-inline-inp-kg" data-cat="'+muscle+'" data-idx="'+idx+'" placeholder="kg" style="width:48px;font-size:11px;flex-shrink:0">';
         html+='</div>';
       });
     }
     html+='</div>';
   });
-  if(!html)html='<div style="color:var(--ink4);font-size:12px;padding:8px 0">Không có dữ liệu tuần này</div>';
   el.innerHTML=html;
 }
 
@@ -2510,27 +2590,34 @@ function showGoalAddLong(){
   if(f)f.style.display=f.style.display==='none'?'block':'none';
 }
 
+
 function renderGoalSummary(){
   var el=document.getElementById('goal-summary');if(!el)return;
-  var long=goals.long||[];var m6p=(goals.m6&&goals.m6.personal)||[];var m6c=(goals.m6&&goals.m6.career)||[];
-  var sprint=goals.sprint||[];
+  var long=goals.long||[];var m6p=(goals.m6&&goals.m6.personal)||[];
+  var m6c=(goals.m6&&goals.m6.career)||[];var sprint=goals.sprint||[];
   var longDone=long.filter(function(g){return g.done;}).length;
   var spDone=sprint.filter(function(g){return g.done;}).length;
   var m6all=[].concat(m6p,m6c);var m6Done=m6all.filter(function(g){return g.done;}).length;
   var cats=[
-    {ic:'&#128336;',label:'M\u1ed1c d\u00e0i',done:longDone,total:long.length,col:'var(--amber)'},
-    {ic:'&#128197;',label:'6 th\u00e1ng',done:m6Done,total:m6all.length,col:'var(--blu)'},
-    {ic:'&#9889;',label:'Sprint',done:spDone,total:sprint.length,col:'var(--grn)'},
+    {ic:'&#128336;',label:'M\u1ed1c d\u00e0i',done:longDone,total:long.length,col:'var(--amber)',link:'scroll to long'},
+    {ic:'&#128197;',label:'6 th\u00e1ng',done:m6Done,total:m6all.length,col:'var(--blu)',link:''},
+    {ic:'&#9889;',label:'Sprint',done:spDone,total:sprint.length,col:'var(--grn)',link:''},
   ];
   el.innerHTML=cats.map(function(c){
     var pct=c.total?Math.round(c.done/c.total*100):0;
-    return '<div style="background:var(--bg3);border-radius:var(--rl);padding:12px;text-align:center;border:1px solid var(--b)">'
-      +'<div style="font-size:1.2rem;margin-bottom:4px">'+c.ic+'</div>'
-      +'<div style="font-size:0.643rem;color:var(--ink3);margin-bottom:4px">'+c.label+'</div>'
-      +'<div style="font-size:1.1rem;font-weight:800;color:'+c.col+'">'+c.done+'/'+c.total+'</div>'
-      +'<div style="height:3px;background:var(--b);border-radius:2px;margin-top:6px;overflow:hidden">'
-      +'<div style="height:100%;width:'+pct+'%;background:'+c.col+';border-radius:2px"></div>'
-      +'</div></div>';
+    var emptyMsg=c.total===0?'<div style="font-size:9px;color:var(--ink4);margin-top:4px">Ch\u01b0a c\u00f3</div>':'';
+    return '<div style="background:var(--bg3);border-radius:var(--rl);padding:14px 10px;text-align:center;border:1px solid var(--b);cursor:pointer" onclick="document.getElementById(\'goal-'+c.label.replace(/ /g,'-')+'\') ">'
+      +'<div style="font-size:1.4rem;margin-bottom:4px">'+c.ic+'</div>'
+      +'<div style="font-size:0.714rem;color:var(--ink3);margin-bottom:6px;font-weight:600">'+c.label+'</div>'
+      +(c.total>0
+        ?'<div style="font-size:1.1rem;font-weight:800;color:'+c.col+'">'+c.done+'/'+c.total+'</div>'
+         +'<div style="height:3px;background:var(--b);border-radius:2px;margin-top:8px;overflow:hidden">'
+         +'<div style="height:100%;width:'+pct+'%;background:'+c.col+';border-radius:2px;transition:width .4s"></div>'
+         +'</div>'
+        :'<div style="font-size:1.1rem;font-weight:800;color:var(--ink4)">—</div>'
+         +'<div style="font-size:10px;color:'+c.col+';margin-top:4px;font-weight:700">+ Th\u00eam</div>'
+      )
+      +'</div>';
   }).join('');
 }
 
@@ -2558,7 +2645,47 @@ renderLich=function(){
   _origRenderLich();
   try{renderLichProgress();}catch(e){}
 };
-</script>
+
+
+function renderGymDayCfg(){
+  var el=document.getElementById('gym-day-cfg');if(!el)return;
+  var COL={'Ngực':'var(--red)','Lưng':'var(--blu)','Vai':'#8b5cf6','Tay':'var(--amber)',
+           'Chân':'var(--grn)','Bụng':'var(--ink2)','Bơi':'#06b6d4','Full body':'var(--g2)'};
+  var html='';
+  [0,1,2,3,4,5,6].forEach(function(d){
+    var dayMuscles=Array.isArray(GYM_DAY_CFG[d])?GYM_DAY_CFG[d]:
+                   (GYM_DAY_CFG[d]&&GYM_DAY_CFG[d]!=='Nghỉ'?[GYM_DAY_CFG[d]]:[]);
+    html+='<div style="padding:10px 0;border-bottom:1px solid var(--b)">';
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
+    html+='<span style="font-size:13px;font-weight:700;color:var(--ink)">'+GYM_DAY_NAMES[d]+'</span>';
+    if(!dayMuscles.length)html+='<span style="font-size:11px;color:var(--ink4)">Nghỉ</span>';
+    else html+='<span style="font-size:11px;color:var(--grn);font-weight:600">'+dayMuscles.join(' + ')+'</span>';
+    html+='</div>';
+    html+='<div style="display:flex;gap:6px;flex-wrap:wrap">';
+    GYM_MUSCLE_OPTS.forEach(function(m){
+      var sel=dayMuscles.indexOf(m)>=0;
+      var col=COL[m]||'var(--ink3)';
+      html+='<div onclick="toggleDayMuscle('+d+',\''+m+'\')" style="cursor:pointer;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid '+(sel?col:'var(--b)')+';background:'+(sel?col+'18':'var(--bg3)')+';color:'+(sel?col:'var(--ink3)')+'" id="gdc-'+d+'-'+m.replace(/ /g,'_')+'">'+m+'</div>';
+    });
+    html+='</div></div>';
+  });
+  el.innerHTML=html;
+}
+
+function saveGymDayCfg(){
+  ss('gym_day_cfg',GYM_DAY_CFG);
+  var msg=document.getElementById('gym-day-msg');
+  if(msg){msg.textContent='✓ Đã lưu!';setTimeout(function(){msg.textContent='';},2000);}
+  showToast('✓ Đã lưu lịch tập!');
+}
+
+function toggleDayMuscle(d,m){
+  if(!Array.isArray(GYM_DAY_CFG[d]))GYM_DAY_CFG[d]=[];
+  var idx=GYM_DAY_CFG[d].indexOf(m);
+  if(idx>=0)GYM_DAY_CFG[d].splice(idx,1);
+  else GYM_DAY_CFG[d].push(m);
+  renderGymDayCfg();
+}</script>
 </body>
 </html>
 
